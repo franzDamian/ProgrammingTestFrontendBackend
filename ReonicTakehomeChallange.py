@@ -23,7 +23,7 @@ import matplotlib.path as path
 
 
 #probability of arrival for each hour of the day
-arivalProb = [0.94, 0.94, 0.94, 0.94, 0.94, 0.94, 0.94, 0.94, 2.83, 2.83, 5.66, 5.66,
+arivalProb = [0.94, 0.94, 0.94, 0.94, 0.94, 0.94, 0.94, 0.94, 2.83, 2.83, 5.66, 5.66, 5.66,
               7.55, 7.55, 7.55, 10.38, 4.72, 4.72, 4.72, 0.94, 0.94]
 #probability distribution of an arriving EV's charging needs
 chargingNeedsProp = [34.31, 4.90, 9.80, 11.76, 8.82, 11.76, 10.78, 4.90, 2.94]
