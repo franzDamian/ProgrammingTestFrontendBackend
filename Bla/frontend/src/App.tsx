@@ -37,8 +37,7 @@ export default function App() {
         <DiscreteSlider initial={8} max={30} min={1} title='Charging Stations' />
         <DiscreteSlider initial={100} max={200} min={20} steps={10} title='Multiplier for arival probalilty' unit='%'/>
         <FormPropsTextFields />
-        <ChargingValues />
-        <List data={testList} />
+        <ChargingValues data={testList} />
         <ExemplaryDay />
         <TotalEnergyCharged />
         <ChargingEvents />
