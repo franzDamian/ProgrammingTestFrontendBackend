@@ -6,8 +6,8 @@ export const ChargingValues = () => {
   // Fetch and process data here
 
   return (
-    <Card>
-      <Typography variant="h6">Charging Values per Chargepoint</Typography>
+    <Card sx={{ horizontalPadding: 2 }}>
+      <Typography  variant="h6">Charging Values per Chargepoint</Typography>
       {/* Display data here */}
     </Card>
   );

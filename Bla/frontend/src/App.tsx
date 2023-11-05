@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import DiscreteSlider from './slider';
-import { List } from './assets/list';
+import { List } from './list';
 import FormPropsTextFields from './inputBox';
 import { ChargingEvents, ChargingValues, ExemplaryDay, TotalEnergyCharged } from './output';
 
@@ -36,9 +36,9 @@ export default function App() {
         </Typography>
         <DiscreteSlider initial={8} max={30} min={1} title='Charging Stations' />
         <DiscreteSlider initial={100} max={200} min={20} steps={10} title='Multiplier for arival probalilty' unit='%'/>
-        <List data={testList} />
         <FormPropsTextFields />
         <ChargingValues />
+        <List data={testList} />
         <ExemplaryDay />
         <TotalEnergyCharged />
         <ChargingEvents />

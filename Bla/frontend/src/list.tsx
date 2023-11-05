@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import { ListType } from "../App";
+import { ListType } from "./App";
 
 
 type ListProps = {
