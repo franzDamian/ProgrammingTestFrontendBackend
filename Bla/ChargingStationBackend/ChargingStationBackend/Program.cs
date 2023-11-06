@@ -1,4 +1,6 @@
-using MongoDB.Driver;
+
+using ChargePointAPI.Controllers;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,8 +11,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var client = new MongoClient("mongodb://localhost:27017");
-var database = client.GetDatabase("myDatabase");
+// connect to postgres database
+builder.Services.AddDbContext<ChargerContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("ChargerContext")));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

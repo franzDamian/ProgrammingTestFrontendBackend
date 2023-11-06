@@ -5,7 +5,8 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using MongoDB.Driver;
+using ChargePointAPI.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ChargePointAPI.Controllers
 {
@@ -14,42 +15,59 @@ namespace ChargePointAPI.Controllers
     public class ChargerController : ControllerBase
     {
         private readonly ILogger<ChargerController> _logger;
-        private readonly IMongoDatabase _database;
+        private readonly ChargerContext _context;
 
-        public ChargerController(ILogger<ChargerController> logger)
+        public ChargerController(ILogger<ChargerController> logger, ChargerContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
         [HttpPost]
-        public IActionResult CreateCharger([FromBody] Charger charger)
+        public async Task<IActionResult> CreateCharger([FromBody] Charger charger)
         {
             // Add charger to database
-            _database.GetCollection<Charger>("chargers").InsertOne(charger);
+            _context.Chargers.Add(charger);
+            await _context.SaveChangesAsync();
             return Ok();
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetCharger(int id)
+        public async Task<IActionResult> GetCharger(int id)
         {
             // Retrieve charger from database
-            var charger = _database.GetCollection<Charger>("chargers").Find(x => x.Id == id).FirstOrDefault();
+            var charger = await _context.Chargers.FindAsync(id);
+            if (charger == null)
+            {
+                return NotFound();
+            }
             return Ok(charger);
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateCharger(int id, [FromBody] Charger charger)
+        public async Task<IActionResult> UpdateCharger(int id, [FromBody] Charger charger)
         {
             // Update charger in database
-            _database.GetCollection<Charger>("chargers").ReplaceOne(x => x.Id == id, charger);
+            if (id != charger.Id)
+            {
+                return BadRequest();
+            }
+            _context.Entry(charger).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
             return Ok();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteCharger(int id)
+        public async Task<IActionResult> DeleteCharger(int id)
         {
             // Delete charger from database
-            _database.GetCollection<Charger>("chargers").DeleteOne(x => x.Id == id);
+            var charger = await _context.Chargers.FindAsync(id);
+            if (charger == null)
+            {
+                return NotFound();
+            }
+            _context.Chargers.Remove(charger);
+            await _context.SaveChangesAsync();
             return Ok();
         }
 
@@ -66,7 +84,8 @@ namespace ChargePointAPI.Controllers
             }
             simulationOutput.ExemplaryDay = DateTime.Now;
             simulationOutput.TotalEnergyCharged = random.NextDouble();
-            _database.GetCollection<SimulationOutput>("simulations").InsertOne(simulationOutput);
+            _context.SimulationOutputs.Add(simulationOutput);
+            _context.SaveChanges();
             return Ok();
         }
     }
