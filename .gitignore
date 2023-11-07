@@ -54,3 +54,5 @@ Bla/ChargingStationBackend/.vs/
 Bla/ChargingStationBackend/ChargingStationBackend/bin/
 Bla/ChargingStationBackend/ChargingStationBackend/obj/
 Bla/ChargingStationBackend/ChargingStationBackend/Properties/
+/Bla/ChargingStationBackend/Dal/obj/
+/Bla/ChargingStationBackend/Dal/bin/

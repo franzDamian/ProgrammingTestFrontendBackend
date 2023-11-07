@@ -17,6 +17,8 @@ namespace Dal
         public DbSet<ChargingStation> ChargingStations { get; set; }
         
         public DbSet<SimulationInput> SimulationInputs { get; set; }
+
+        public DbSet<SimulationOutput> SimulationOutputs { get; set; }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -29,6 +31,21 @@ namespace Dal
                 .Property(SimulationInput => SimulationInput.id).ValueGeneratedOnAdd();
             modelBuilder.Entity<SimulationInput>()
                 .Property(SimulationInput => SimulationInput.AverageConsumptionOfCars).IsRequired();
+
+            modelBuilder.Entity<SimulationOutput>()
+                .Property(SimulationOutput => SimulationOutput.Id).ValueGeneratedOnAdd();
+            modelBuilder.Entity<SimulationOutput>()
+                .Property(SimulationOutput => SimulationOutput.TotalEnergyCharged).IsRequired();
+            modelBuilder.Entity<SimulationOutput>()
+                .Property(SimulationOutput => SimulationOutput.NumberOfChargingEventsPerYear).IsRequired();
+            modelBuilder.Entity<SimulationOutput>()
+                .Property(SimulationOutput => SimulationOutput.NumberOfChargingEventsPerMonth).IsRequired();
+            modelBuilder.Entity<SimulationOutput>()
+                .Property(SimulationOutput => SimulationOutput.NumberOfChargingEventsPerWeek).IsRequired();
+            modelBuilder.Entity<SimulationOutput>()
+                .Property(SimulationOutput => SimulationOutput.NumberOfChargingEventsPerDay).IsRequired();
+            modelBuilder.Entity<SimulationOutput>()
+                .Property(SimulationOutput => SimulationOutput.DeviationOfConcurrencyFactor).IsRequired();
         }
     }
 }
