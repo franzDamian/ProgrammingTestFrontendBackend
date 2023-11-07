@@ -5,98 +5,75 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using ChargePointAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using Dal;
+using Dal.Model;
 
 namespace ChargePointAPI.Controllers
 {
+    public record ChargerDto (int chargingPower);
+    public record SimulationInputDto(List<ChargingStation> chargingStations, int averageConsumptionOfCars);
     [ApiController]
     [Route("[controller]")]
     public class ChargerController : ControllerBase
     {
-        private readonly ILogger<ChargerController> _logger;
-        private readonly ChargerContext _context;
+        private readonly ChargingStationContext _context;
 
-        public ChargerController(ILogger<ChargerController> logger, ChargerContext context)
+        public ChargerController(ChargingStationContext context)
         {
-            _logger = logger;
             _context = context;
         }
-
-        [HttpPost]
-        public async Task<IActionResult> CreateCharger([FromBody] Charger charger)
+        [HttpPost("add")]
+        public async Task PostChargerAsync([FromBody] ChargerDto chargerDto)
         {
-            // Add charger to database
-            _context.Chargers.Add(charger);
+            _context.ChargingStations.Add(new ChargingStation { ChargingPower = chargerDto.chargingPower });
+            
             await _context.SaveChangesAsync();
-            return Ok();
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetCharger(int id)
+        [HttpPost("addSimulation")]
+        public async Task PostSimulationInputAsync([FromBody] SimulationInputDto simulationInputDto)
         {
-            // Retrieve charger from database
-            var charger = await _context.Chargers.FindAsync(id);
-            if (charger == null)
-            {
-                return NotFound();
-            }
-            return Ok(charger);
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCharger(int id, [FromBody] Charger charger)
-        {
-            // Update charger in database
-            if (id != charger.Id)
-            {
-                return BadRequest();
-            }
-            _context.Entry(charger).State = EntityState.Modified;
+            
+            _context.Add(simulationInputDto);
             await _context.SaveChangesAsync();
-            return Ok();
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCharger(int id)
+        [HttpGet]
+        public async Task<ActionResult<List<ChargingStation>>> GetChargerAsync()
         {
-            // Delete charger from database
-            var charger = await _context.Chargers.FindAsync(id);
-            if (charger == null)
-            {
-                return NotFound();
-            }
-            _context.Chargers.Remove(charger);
-            await _context.SaveChangesAsync();
-            return Ok();
+            var chargingStations = await _context.ChargingStations.ToListAsync();
+            return chargingStations;
         }
 
-        [HttpPost("simulation")]
-        public IActionResult RunSimulation([FromBody] SimulationInput input)
-        {
-            // Run simulation and store results in database
-            Random random = new Random();
-            var simulationOutput = new SimulationOutput();
-            simulationOutput.ChargingValuesPerCharger = new List<double>();
-            for (int i = 0; i < input.NumberOfChargers; i++)
-            {
-                simulationOutput.ChargingValuesPerCharger.Add(random.NextDouble());
-            }
-            simulationOutput.ExemplaryDay = DateTime.Now;
-            simulationOutput.TotalEnergyCharged = random.NextDouble();
-            _context.SimulationOutputs.Add(simulationOutput);
-            _context.SaveChanges();
-            return Ok();
-        }
     }
 
     public class Charger
     {
         public int Id { get; set; }
+        public double ChargersMaxPowerOutput { get; set; }
+        public List<ChargingEvent> ChargingEvents { get; set; }
+    }
+
+    public class ChargingEvent
+    {
+        public int Id { get; set; }
+        public double EnergyCharged { get; set; }
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
+    }
+
+    public class ChargerList
+    {
+        public int Id { get; set; }
+        public List<Charger> Chargers { get; set; }
+        public DateTime ExemplaryDay { get; set; }
         public int NumberOfChargers { get; set; }
         public double ArrivalProbabilityMultiplier { get; set; } = 1.0;
         public double CarConsumption { get; set; } = 18.0;
         public double ChargingPowerPerCharger { get; set; } = 11.0;
+
+
     }
 
     public class SimulationInput

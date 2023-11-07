@@ -1,0 +1,15 @@
+C:\Users\Franz\repos\ProgrammingReonic\Bla\ChargingStationBackend\Dal\obj\Debug\net6.0\Dal.csproj.AssemblyReference.cache
+C:\Users\Franz\repos\ProgrammingReonic\Bla\ChargingStationBackend\Dal\obj\Debug\net6.0\Dal.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Franz\repos\ProgrammingReonic\Bla\ChargingStationBackend\Dal\obj\Debug\net6.0\Dal.AssemblyInfoInputs.cache
+C:\Users\Franz\repos\ProgrammingReonic\Bla\ChargingStationBackend\Dal\obj\Debug\net6.0\Dal.AssemblyInfo.cs
+C:\Users\Franz\repos\ProgrammingReonic\Bla\ChargingStationBackend\Dal\obj\Debug\net6.0\Dal.csproj.CoreCompileInputs.cache
+C:\Users\Franz\repos\ProgrammingReonic\Bla\ChargingStationBackend\Dal\obj\Debug\net6.0\Dal.sourcelink.json
+C:\Users\Franz\repos\ProgrammingReonic\Bla\ChargingStationBackend\Dal\bin\Debug\net6.0\Dal.deps.json
+C:\Users\Franz\repos\ProgrammingReonic\Bla\ChargingStationBackend\Dal\bin\Debug\net6.0\Dal.runtimeconfig.json
+C:\Users\Franz\repos\ProgrammingReonic\Bla\ChargingStationBackend\Dal\bin\Debug\net6.0\Dal.dll
+C:\Users\Franz\repos\ProgrammingReonic\Bla\ChargingStationBackend\Dal\bin\Debug\net6.0\Dal.pdb
+C:\Users\Franz\repos\ProgrammingReonic\Bla\ChargingStationBackend\Dal\obj\Debug\net6.0\Dal.dll
+C:\Users\Franz\repos\ProgrammingReonic\Bla\ChargingStationBackend\Dal\obj\Debug\net6.0\refint\Dal.dll
+C:\Users\Franz\repos\ProgrammingReonic\Bla\ChargingStationBackend\Dal\obj\Debug\net6.0\Dal.pdb
+C:\Users\Franz\repos\ProgrammingReonic\Bla\ChargingStationBackend\Dal\obj\Debug\net6.0\Dal.genruntimeconfig.cache
+C:\Users\Franz\repos\ProgrammingReonic\Bla\ChargingStationBackend\Dal\obj\Debug\net6.0\ref\Dal.dll
