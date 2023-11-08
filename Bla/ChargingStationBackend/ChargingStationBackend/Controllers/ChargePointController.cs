@@ -11,8 +11,23 @@ using Dal.Model;
 
 namespace ChargePointAPI.Controllers
 {
-    public record ChargerDto (int chargingPower);
-    public record SimulationInputDto(List<ChargingStation> chargingStations, int averageConsumptionOfCars);
+    public record ChargerDto(int ChargingPower);
+
+    public record SimulationInputDto(
+        List<ChargingStation> ChargingStations,
+        int AverageConsumptionOfCars,
+        int ArrivalProbabilityMultiplier);
+
+    public record SimulationOutputDto(
+        List<List<double>> ChargingValuesPerChargingStationPerDay,
+        int TotalEnergyCharged,
+        int NumberOfChargingEventsPerYear,
+        int NumberOfChargingEventsPerMonth,
+        int NumberOfChargingEventsPerWeek,
+        int NumberOfChargingEventsPerDay,
+        double DeviationOfConcurrencyFactor);
+
+
     [ApiController]
     [Route("[controller]")]
     public class ChargerController : ControllerBase
@@ -23,19 +38,19 @@ namespace ChargePointAPI.Controllers
         {
             _context = context;
         }
+
         [HttpPost("add")]
         public async Task PostChargerAsync([FromBody] ChargerDto chargerDto)
         {
-            _context.ChargingStations.Add(new ChargingStation { ChargingPower = chargerDto.chargingPower });
-            
+            _context.ChargingStations.Add(new ChargingStation { ChargingPower = chargerDto.ChargingPower });
+
             await _context.SaveChangesAsync();
         }
 
         [HttpPost("addSimulation")]
         public async Task PostSimulationInputAsync([FromBody] SimulationInputDto simulationInputDto)
         {
-            
-            _context.Add(simulationInputDto);
+            _context.SimulationInputs.Add(new SimulationInput());
             await _context.SaveChangesAsync();
         }
 
@@ -46,49 +61,27 @@ namespace ChargePointAPI.Controllers
             return chargingStations;
         }
 
-    }
+        [HttpPost("addOutput")]
+        public async Task PostSimulationOutputAsync([FromBody] SimulationOutputDto simulationOutputDto)
+        {
+            _context.SimulationOutputs.Add(new SimulationOutput
+            {
+                ChargingValuesPerChargingStationPerDay = simulationOutputDto.ChargingValuesPerChargingStationPerDay,
+                TotalEnergyCharged = simulationOutputDto.TotalEnergyCharged,
+                NumberOfChargingEventsPerYear = simulationOutputDto.NumberOfChargingEventsPerYear,
+                NumberOfChargingEventsPerMonth = simulationOutputDto.NumberOfChargingEventsPerMonth,
+                NumberOfChargingEventsPerWeek = simulationOutputDto.NumberOfChargingEventsPerWeek,
+                NumberOfChargingEventsPerDay = simulationOutputDto.NumberOfChargingEventsPerDay,
+                DeviationOfConcurrencyFactor = simulationOutputDto.DeviationOfConcurrencyFactor
+            });
+            await _context.SaveChangesAsync();
+        }
 
-    public class Charger
-    {
-        public int Id { get; set; }
-        public double ChargersMaxPowerOutput { get; set; }
-        public List<ChargingEvent> ChargingEvents { get; set; }
-    }
-
-    public class ChargingEvent
-    {
-        public int Id { get; set; }
-        public double EnergyCharged { get; set; }
-        public DateTime StartTime { get; set; }
-        public DateTime EndTime { get; set; }
-    }
-
-    public class ChargerList
-    {
-        public int Id { get; set; }
-        public List<Charger> Chargers { get; set; }
-        public DateTime ExemplaryDay { get; set; }
-        public int NumberOfChargers { get; set; }
-        public double ArrivalProbabilityMultiplier { get; set; } = 1.0;
-        public double CarConsumption { get; set; } = 18.0;
-        public double ChargingPowerPerCharger { get; set; } = 11.0;
-
-
-    }
-
-    public class SimulationInput
-    {
-        public int NumberOfChargers { get; set; }
-        public double ArrivalProbabilityMultiplier { get; set; } = 1.0;
-        public double CarConsumption { get; set; } = 18.0;
-        public double ChargingPowerPerCharger { get; set; } = 11.0;
-    }
-
-    public class SimulationOutput
-    {
-        public List<double> ChargingValuesPerCharger { get; set; }
-        public DateTime ExemplaryDay { get; set; }
-        public double TotalEnergyCharged { get; set; }
-        public int NumberOfChargingEvents { get; set; }
+        [HttpGet("getOutput")]
+        public async Task<ActionResult<List<SimulationOutput>>> GetOutPutAsync()
+        {
+            var output = await _context.SimulationOutputs.ToListAsync();
+            return output;
+        }
     }
 }

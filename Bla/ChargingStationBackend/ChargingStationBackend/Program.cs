@@ -1,7 +1,9 @@
+using ChargingStationBackend.SimulationCalculation;
 using Dal;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+RunSimulation runSimulation = new RunSimulation();
 
 // Add services to the container.
 

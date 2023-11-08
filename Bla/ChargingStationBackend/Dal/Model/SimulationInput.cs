@@ -14,7 +14,8 @@ namespace Dal.Model
             the charging power per chargepoint (default: 11 kW)
         */
         public int id { get; set; }
-        public List<ChargingStation> chargingStations { get; set; } = new List<ChargingStation>();
+        public List<ChargingStation> ChargingStations { get; set; } = new List<ChargingStation>();
         public int AverageConsumptionOfCars { get; set; }
+        public int ArrivalProbabilityMultiplier { get; set; }
     }
 }

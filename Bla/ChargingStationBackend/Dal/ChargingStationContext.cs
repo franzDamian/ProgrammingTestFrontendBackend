@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Dal
 {
@@ -19,6 +20,7 @@ namespace Dal
         public DbSet<SimulationInput> SimulationInputs { get; set; }
 
         public DbSet<SimulationOutput> SimulationOutputs { get; set; }
+
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -46,6 +48,13 @@ namespace Dal
                 .Property(SimulationOutput => SimulationOutput.NumberOfChargingEventsPerDay).IsRequired();
             modelBuilder.Entity<SimulationOutput>()
                 .Property(SimulationOutput => SimulationOutput.DeviationOfConcurrencyFactor).IsRequired();
+            // Generate the charging values per charging station per day in the database with a primary key for each list<double> in the list
+            modelBuilder.Entity<SimulationOutput>().HasKey(SimulationOutput => SimulationOutput.ChargingValuesPerChargingStationPerDay);
+            modelBuilder
+                .Entity<SimulationOutput>()
+                .Property(SimulationOutput => SimulationOutput.ChargingValuesPerChargingStationPerDay)
+                .HasConversion(x => JsonConvert.SerializeObject(x), y => JsonConvert.DeserializeObject<List<List<double>>>(y) ?? new ());
+
         }
     }
 }

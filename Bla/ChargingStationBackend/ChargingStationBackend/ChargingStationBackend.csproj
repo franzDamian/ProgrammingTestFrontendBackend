@@ -13,6 +13,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.11" />
     <PackageReference Include="NSwag.AspNetCore" Version="13.20.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
@@ -20,10 +21,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Dal\Dal.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="SimulationCalculation\" />
   </ItemGroup>
 
 </Project>

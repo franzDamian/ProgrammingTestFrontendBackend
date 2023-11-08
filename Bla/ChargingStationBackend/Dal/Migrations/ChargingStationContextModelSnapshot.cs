@@ -51,6 +51,9 @@ namespace Dal.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
 
+                    b.Property<int>("ArrivalProbabilityMultiplier")
+                        .HasColumnType("integer");
+
                     b.Property<int>("AverageConsumptionOfCars")
                         .HasColumnType("integer");
 
@@ -59,16 +62,50 @@ namespace Dal.Migrations
                     b.ToTable("SimulationInputs");
                 });
 
+            modelBuilder.Entity("Dal.Model.SimulationOutput", b =>
+                {
+                    b.Property<string>("ChargingValuesPerChargingStationPerDay")
+                        .HasColumnType("text");
+
+                    b.Property<double>("DeviationOfConcurrencyFactor")
+                        .HasColumnType("double precision");
+
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("NumberOfChargingEventsPerDay")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("NumberOfChargingEventsPerMonth")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("NumberOfChargingEventsPerWeek")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("NumberOfChargingEventsPerYear")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TotalEnergyCharged")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ChargingValuesPerChargingStationPerDay");
+
+                    b.ToTable("SimulationOutputs");
+                });
+
             modelBuilder.Entity("Dal.Model.ChargingStation", b =>
                 {
                     b.HasOne("Dal.Model.SimulationInput", null)
-                        .WithMany("chargingStations")
+                        .WithMany("ChargingStations")
                         .HasForeignKey("SimulationInputid");
                 });
 
             modelBuilder.Entity("Dal.Model.SimulationInput", b =>
                 {
-                    b.Navigation("chargingStations");
+                    b.Navigation("ChargingStations");
                 });
 #pragma warning restore 612, 618
         }

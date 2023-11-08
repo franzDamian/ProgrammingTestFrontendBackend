@@ -17,11 +17,31 @@ namespace Dal.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    AverageConsumptionOfCars = table.Column<int>(type: "integer", nullable: false)
+                    AverageConsumptionOfCars = table.Column<int>(type: "integer", nullable: false),
+                    ArrivalProbabilityMultiplier = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SimulationInputs", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SimulationOutputs",
+                columns: table => new
+                {
+                    ChargingValuesPerChargingStationPerDay = table.Column<string>(type: "text", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TotalEnergyCharged = table.Column<int>(type: "integer", nullable: false),
+                    NumberOfChargingEventsPerYear = table.Column<int>(type: "integer", nullable: false),
+                    NumberOfChargingEventsPerMonth = table.Column<int>(type: "integer", nullable: false),
+                    NumberOfChargingEventsPerWeek = table.Column<int>(type: "integer", nullable: false),
+                    NumberOfChargingEventsPerDay = table.Column<int>(type: "integer", nullable: false),
+                    DeviationOfConcurrencyFactor = table.Column<double>(type: "double precision", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SimulationOutputs", x => x.ChargingValuesPerChargingStationPerDay);
                 });
 
             migrationBuilder.CreateTable(
@@ -54,6 +74,9 @@ namespace Dal.Migrations
         {
             migrationBuilder.DropTable(
                 name: "ChargingStations");
+
+            migrationBuilder.DropTable(
+                name: "SimulationOutputs");
 
             migrationBuilder.DropTable(
                 name: "SimulationInputs");

@@ -18,7 +18,8 @@ namespace Dal.Model
          */
 
         public int Id { get; set; }
-        public List<Tuple<ChargingStation, double>> ChargingValuesPerChargingStation { get; set; } = new List<Tuple<ChargingStation, double>>(); 
+
+        public List<List<double>> ChargingValuesPerChargingStationPerDay { get; set; } = new();
         public int TotalEnergyCharged { get; set; }
         public int NumberOfChargingEventsPerYear { get; set; }
         public int NumberOfChargingEventsPerMonth { get; set; }
