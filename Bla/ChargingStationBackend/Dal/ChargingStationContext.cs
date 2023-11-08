@@ -16,45 +16,46 @@ namespace Dal
         }
 
         public DbSet<ChargingStation> ChargingStations { get; set; }
-        
+
         public DbSet<SimulationInput> SimulationInputs { get; set; }
 
         public DbSet<SimulationOutput> SimulationOutputs { get; set; }
 
-        
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ChargingStation>()
-                .Property(ChargingStation => ChargingStation.Id).ValueGeneratedOnAdd();
+                .Property(chargingStation => chargingStation.Id).ValueGeneratedOnAdd();
             modelBuilder.Entity<ChargingStation>()
-                .Property(cs => cs.ChargingPower).IsRequired();
-            
+                .Property(chargingStation => chargingStation.ChargingPower).IsRequired();
+
             modelBuilder.Entity<SimulationInput>()
-                .Property(SimulationInput => SimulationInput.id).ValueGeneratedOnAdd();
+                .Property(simulationInput => simulationInput.id).ValueGeneratedOnAdd();
             modelBuilder.Entity<SimulationInput>()
-                .Property(SimulationInput => SimulationInput.AverageConsumptionOfCars).IsRequired();
+                .Property(simulationInput => simulationInput.AverageConsumptionOfCars).IsRequired();
 
             modelBuilder.Entity<SimulationOutput>()
-                .Property(SimulationOutput => SimulationOutput.Id).ValueGeneratedOnAdd();
+                .Property(simulationOutput => simulationOutput.Id).ValueGeneratedOnAdd();
             modelBuilder.Entity<SimulationOutput>()
-                .Property(SimulationOutput => SimulationOutput.TotalEnergyCharged).IsRequired();
+                .Property(simulationOutput => simulationOutput.TotalEnergyCharged).IsRequired();
             modelBuilder.Entity<SimulationOutput>()
-                .Property(SimulationOutput => SimulationOutput.NumberOfChargingEventsPerYear).IsRequired();
+                .Property(simulationOutput => simulationOutput.NumberOfChargingEventsPerYear).IsRequired();
             modelBuilder.Entity<SimulationOutput>()
-                .Property(SimulationOutput => SimulationOutput.NumberOfChargingEventsPerMonth).IsRequired();
+                .Property(simulationOutput => simulationOutput.NumberOfChargingEventsPerMonth).IsRequired();
             modelBuilder.Entity<SimulationOutput>()
-                .Property(SimulationOutput => SimulationOutput.NumberOfChargingEventsPerWeek).IsRequired();
+                .Property(simulationOutput => simulationOutput.NumberOfChargingEventsPerWeek).IsRequired();
             modelBuilder.Entity<SimulationOutput>()
-                .Property(SimulationOutput => SimulationOutput.NumberOfChargingEventsPerDay).IsRequired();
+                .Property(simulationOutput => simulationOutput.NumberOfChargingEventsPerDay).IsRequired();
             modelBuilder.Entity<SimulationOutput>()
-                .Property(SimulationOutput => SimulationOutput.DeviationOfConcurrencyFactor).IsRequired();
+                .Property(simulationOutput => simulationOutput.DeviationOfConcurrencyFactor).IsRequired();
             // Generate the charging values per charging station per day in the database with a primary key for each list<double> in the list
-            modelBuilder.Entity<SimulationOutput>().HasKey(SimulationOutput => SimulationOutput.ChargingValuesPerChargingStationPerDay);
+            modelBuilder.Entity<SimulationOutput>()
+                .HasKey(simulationOutput => simulationOutput.ChargingValuesPerChargingStationPerDay);
             modelBuilder
                 .Entity<SimulationOutput>()
-                .Property(SimulationOutput => SimulationOutput.ChargingValuesPerChargingStationPerDay)
-                .HasConversion(x => JsonConvert.SerializeObject(x), y => JsonConvert.DeserializeObject<List<List<double>>>(y) ?? new ());
-
+                .Property(simulationOutput => simulationOutput.ChargingValuesPerChargingStationPerDay)
+                .HasConversion(x => JsonConvert.SerializeObject(x),
+                    y => JsonConvert.DeserializeObject<List<List<double>>>(y) ?? new());
         }
     }
 }

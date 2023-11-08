@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using ChargingStationBackend.SimulationCalculation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
@@ -56,7 +57,9 @@ namespace ChargePointAPI.Controllers
                 AverageConsumptionOfCars = simulationInputDto.AverageConsumptionOfCars,
                 ChargingStations = simulationInputDto.ChargingStations
             });
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
+            Simulation simulation = new Simulation(_context);
+            await simulation.SimulationRun();
         }
 
         [HttpGet("GetChargingStationList")]

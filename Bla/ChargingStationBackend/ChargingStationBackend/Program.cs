@@ -3,8 +3,7 @@ using Dal;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-RunSimulation runSimulation = new RunSimulation();
-
+//RunSimulation runSimulation = new RunSimulation();
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -37,4 +36,3 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
-
