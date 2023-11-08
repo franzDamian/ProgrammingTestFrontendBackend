@@ -39,7 +39,7 @@ namespace ChargePointAPI.Controllers
             _context = context;
         }
 
-        [HttpPost("add")]
+        [HttpPost("AddChargingStation")]
         public async Task PostChargerAsync([FromBody] ChargerDto chargerDto)
         {
             _context.ChargingStations.Add(new ChargingStation { ChargingPower = chargerDto.ChargingPower });
@@ -47,21 +47,26 @@ namespace ChargePointAPI.Controllers
             await _context.SaveChangesAsync();
         }
 
-        [HttpPost("addSimulation")]
+        [HttpPost("AddSimulationInput")]
         public async Task PostSimulationInputAsync([FromBody] SimulationInputDto simulationInputDto)
         {
-            _context.SimulationInputs.Add(new SimulationInput());
+            _context.SimulationInputs.Add(new SimulationInput()
+            {
+                ArrivalProbabilityMultiplier = simulationInputDto.ArrivalProbabilityMultiplier,
+                AverageConsumptionOfCars = simulationInputDto.AverageConsumptionOfCars,
+                ChargingStations = simulationInputDto.ChargingStations
+            });
             await _context.SaveChangesAsync();
         }
 
-        [HttpGet]
+        [HttpGet("GetChargingStationList")]
         public async Task<ActionResult<List<ChargingStation>>> GetChargerAsync()
         {
             var chargingStations = await _context.ChargingStations.ToListAsync();
             return chargingStations;
         }
 
-        [HttpPost("addOutput")]
+        [HttpPost("AddSimulationOutput")]
         public async Task PostSimulationOutputAsync([FromBody] SimulationOutputDto simulationOutputDto)
         {
             _context.SimulationOutputs.Add(new SimulationOutput
