@@ -1,0 +1,34 @@
+ChargerDto{
+chargingPower	integer($int32)
+}
+SimulationInputDto{
+chargingStations	[ChargingStation{
+id	integer($int32)
+chargingPower	integer($int32)
+}]
+averageConsumptionOfCars	integer($int32)
+arrivalProbabilityMultiplier	integer($int32)
+}
+ChargingStation{
+id	integer($int32)
+chargingPower	integer($int32)
+}
+SimulationOutputDto{
+chargingValuesPerChargingStationPerDay	[[number($double)]]
+totalEnergyCharged	integer($int32)
+numberOfChargingEventsPerYear	integer($int32)
+numberOfChargingEventsPerMonth	integer($int32)
+numberOfChargingEventsPerWeek	integer($int32)
+numberOfChargingEventsPerDay	integer($int32)
+deviationOfConcurrencyFactor	number($double)
+}
+SimulationOutput{
+id	integer($int32)
+chargingValuesPerChargingStationPerDay	[[number($double)]]
+totalEnergyCharged	integer($int32)
+numberOfChargingEventsPerYear	integer($int32)
+numberOfChargingEventsPerMonth	integer($int32)
+numberOfChargingEventsPerWeek	integer($int32)
+numberOfChargingEventsPerDay	integer($int32)
+deviationOfConcurrencyFactor	number($double)
+}

@@ -16,6 +16,10 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.11" />
     <PackageReference Include="NSwag.AspNetCore" Version="13.20.0" />
+    <PackageReference Include="NSwag.MSBuild" Version="13.20.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
@@ -23,4 +27,15 @@
     <ProjectReference Include="..\Dal\Dal.csproj" />
   </ItemGroup>
 
+    <PropertyGroup>
+		<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+	</PropertyGroup>
+	<Target Name="TypescriptGeneration" AfterTargets="PostBuildEvent">
+		<Exec EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" WorkingDirectory="$(ProjectDir)" Command="$(NSwagExe_Net60) run nswag.json /variables:Configuration=$(Configuration)" ConsoleToMSBuild="true" ContinueOnError="true">
+            <Output TaskParameter="ExitCode" PropertyName="NswagExitCode" />
+            <Output TaskParameter="ConsoleOutput" PropertyName="NswagConsoleOutput" />
+		</Exec>
+        <Message Text="$(NswagConsoleOutput)" Importance="low" Condition="'$(NswagExitCode)' == '0'"/>
+        <Error Text="$(NswagConsoleOutput)" Condition="'$(NswagExitCode)' != '0'"/>
+	</Target>
 </Project>

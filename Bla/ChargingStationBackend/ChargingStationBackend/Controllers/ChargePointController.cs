@@ -14,8 +14,10 @@ namespace ChargePointAPI.Controllers
 {
     public record ChargerDto(int ChargingPower);
 
+    public record ChargingStationDto(int ChargingPower);
+
     public record SimulationInputDto(
-        List<ChargingStation> ChargingStations,
+        List<ChargingStationDto> ChargingStations,
         int AverageConsumptionOfCars,
         int ArrivalProbabilityMultiplier);
 
@@ -33,11 +35,14 @@ namespace ChargePointAPI.Controllers
     [Route("[controller]")]
     public class ChargerController : ControllerBase
     {
+        private readonly SimulationService _simulationService;
+
         private readonly ChargingStationContext _context;
 
-        public ChargerController(ChargingStationContext context)
+        public ChargerController(ChargingStationContext context, SimulationService simulationService)
         {
             _context = context;
+            _simulationService = simulationService;
         }
 
         [HttpPost("AddChargingStation")]
@@ -51,15 +56,20 @@ namespace ChargePointAPI.Controllers
         [HttpPost("AddSimulationInput")]
         public async Task PostSimulationInputAsync([FromBody] SimulationInputDto simulationInputDto)
         {
-            _context.SimulationInputs.Add(new SimulationInput()
+            var simInput = new SimulationInput()
             {
                 ArrivalProbabilityMultiplier = simulationInputDto.ArrivalProbabilityMultiplier,
                 AverageConsumptionOfCars = simulationInputDto.AverageConsumptionOfCars,
-                ChargingStations = simulationInputDto.ChargingStations
-            });
-            _context.SaveChanges();
-            Simulation simulation = new Simulation(_context);
-            await simulation.SimulationRun();
+                ChargingStations = simulationInputDto.ChargingStations.Select(cs => new ChargingStation()
+                {
+                    ChargingPower = cs.ChargingPower
+                }).ToList()
+            };
+            _context.SimulationInputs.Add(simInput);
+            var simulationOutput = await _simulationService.SimulationRun(simInput);
+            _context.SimulationOutputs.Add(simulationOutput);
+            // Save the simulationInput and simulationOutput to the database
+            await _context.SaveChangesAsync();
         }
 
         [HttpGet("GetChargingStationList")]
