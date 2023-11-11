@@ -15,7 +15,10 @@ namespace ChargingStationBackend.SimulationCalculation
             4.72, 4.72, 0.94, 0.94
         };
 
-        private readonly double[] _carNeedsCharging = { 34.31, 4.90, 9.80, 11.76, 8.82, 11.76, 10.78, 4.90, 2.94 };
+        // _carNeedsCharging is the probability that a car needs charging and how much energy it needs in Kilometers (0 km, 10 km, 20 km, 30 km, 50 km, 100 km, 200 km, 300 km)
+        private readonly double[] _carChargingDemandInKilometers =
+            { 34.31, 4.90, 9.80, 11.76, 8.82, 11.76, 10.78, 4.90, 2.94 };
+
         private readonly int _ticksPerYear = 35040;
         private readonly int _ticksPerMonth = 35040 / 12;
         private readonly int _ticksPerWeek = 35040 / 54;
@@ -53,23 +56,56 @@ namespace ChargingStationBackend.SimulationCalculation
                 // use carNeedsCharging to calculate the charging values
 
 
-                var chargingValue = 0.0;
-                var chargingValues = new List<double>();
+                var chargingValuePerDay = 0.0;
 
+
+                var chargingValues = new List<double>();
+                var chargingStationIsUsed = false;
                 theoreticalMaxPowerOutput += chargingStation.ChargingPower;
+
+                // calculate the charging values per day for one charging station for one year
                 for (var i = 0; i < _ticksPerYear; i++)
                 {
+                    var chargingValuePerTick = 0.0;
+                    // calculate the number of arrivals per tick
                     var numArrivals = new Random().Next(_arrivalDistribution.Length);
+                    // calculate the probability that a car needs charging and how long it needs to charging
+                    // depending on the power consumption of the car and the charging power of the charging station
+                    var carNeedsChargingProbability =
+                        _carChargingDemandInKilometers[new Random().Next(_carChargingDemandInKilometers.Length)];
+
+                    if (!chargingStationIsUsed)
+                    {
+                        numArrivals = (int)(numArrivals * simulationInput.ArrivalProbabilityMultiplier);
+                    }
+
+                    if (chargingStationIsUsed)
+                    {
+                        carNeedsChargingProbability = 0;
+                    }
+                    else
+                    {
+                        if (chargingValuePerDay + chargingStation.ChargingPower > 100)
+                        {
+                            chargingStationIsUsed = true;
+                            carNeedsChargingProbability = 0;
+                        }
+                    }
+
+                    //var carNeedsChargingProbability =
+                    // _carNeedsCharging[new Random().Next(_carNeedsCharging.Length)];
+                    // calculate the total actual power output using the minimum of the number of arrivals and the charging power
                     var totalPowerOutput = Math.Min(numArrivals, chargingStation.ChargingPower) *
                                            chargingStation.ChargingPower;
-                    var carNeedsChargingProbability =
-                        _carNeedsCharging[new Random().Next(_carNeedsCharging.Length)];
-                    chargingValue = totalPowerOutput * 0.25 * carNeedsChargingProbability;
-                    totalEnergyCharged += chargingValue;
+
+
+                    chargingValuePerTick = totalPowerOutput * 0.25 * carNeedsChargingProbability;
+                    totalEnergyCharged += chargingValuePerTick;
                     maxPowerOutput = Math.Max(maxPowerOutput, totalPowerOutput);
-                    chargingValues.Add(chargingValue);
+                    chargingValues.Add(chargingValuePerDay);
                 }
 
+                chargingStationIsUsed = false;
                 // calculate the number of charging events per year/month/week/day
                 numberOfChargingEventsPerYear += (int)chargingValues.Count;
                 numberOfChargingEventsPerMonth += (int)chargingValues.Count / _ticksPerMonth;
