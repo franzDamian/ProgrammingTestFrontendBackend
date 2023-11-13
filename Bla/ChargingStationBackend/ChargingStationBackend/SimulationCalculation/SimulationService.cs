@@ -1,35 +1,13 @@
-﻿using System;
-using System.Linq.Expressions;
-using System.Text.Json.Nodes;
-using Dal;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using Dal.Model;
-using Microsoft.EntityFrameworkCore;
 
 namespace ChargingStationBackend.SimulationCalculation
 {
     public class SimulationService
     {
-        // _arrivalDistribution is the probability that a car arrives per hour (24 hours)
-        private readonly double[] _arrivalDistribution =
-        {
-            .0094, .0094, .0094, .0094, .0094, .0094, .0094, .0094, .0283, .0283, .0566, .0566, .0566, .0755, .0755,
-            .0755, .1038, .0472,
-            .0472, .0472, .0094, .0094
-        };
-
-        // _carNeedsCharging is the probability that a car needs charging and how much energy it needs in Kilometers (0 km, 5km, 10 km, 20 km, 30 km, 50 km, 100 km, 200 km, 300 km)
-        private readonly double[] _carChargingDemandInPercent =
-            { .3431, .0490, .0980, .1176, .0882, .1176, .1078, .0490, .0294 };
-
-        private readonly double[] _carChargingDemandInKm =
-            { 0, 5, 10, 20, 30, 50, 100, 200, 300 };
-
-        private readonly int _ticksPerYear = 35040;
-        private readonly int _ticksPerMonth = 35040 / 12;
-        private readonly int _ticksPerWeek = 35040 / 54;
-        private readonly int _ticksPerDay = 35040 / 365;
-        private int _daysPerYear = 365;
-
+        private readonly int _ticksPerHour = 4;
+        private const int _ticksPerDay = 96;
 
         public SimulationOutput SimulationRun(SimulationInput simulationInput)
         {
@@ -37,157 +15,190 @@ namespace ChargingStationBackend.SimulationCalculation
                 throw new System.Exception("AverageConsumptionOfCars is 0");
             if (simulationInput.ChargingStations.Count == 0)
                 throw new System.Exception("ChargingStations is empty");
-
-
-            var averageConsumptionOfCarsPer100Km = simulationInput.AverageConsumptionOfCars;
-            var simulationOutput = new SimulationOutput();
-            var totalEnergyCharged = 0.0;
-            var theoreticalMaxPowerOutput = 0.0;
-            var actualMaxDemand = 0.0;
-            var concurrencyFactor = 0.0;
-            var chargingValuesPerChargingStation = new List<List<double>>();
-            var numberOfChargingEventsPerYear = 0;
-            var numberOfChargingEventsPerMonth = 0;
-            var numberOfChargingEventsPerWeek = 0;
-            var numberOfChargingEventsPerDay = 0;
-            var deviationOfConcurrencyFactor = 0.0;
-            var chargedByCurrentCar = 0.0;
-            var chargingNeedInKiloWatt = 0.0;
-
-
-            foreach (var chargingStation in simulationInput.ChargingStations)
+            // transform the input to a list of charging stations
+            var cs = simulationInput.ChargingStations.Select(cs => new SimChargingStation
             {
-                var chargingValuePerDay = 0.0;
+                ChargingPower = cs.ChargingPower
+            }).ToList();
 
+            SimYear(cs, simulationInput.AverageConsumptionOfCars, simulationInput.ArrivalProbabilityMultiplier);
 
-                var chargingValues = new List<double>();
-                var chargingStationIsUsed = false;
-                theoreticalMaxPowerOutput += chargingStation.ChargingPower;
-
-                // calculate the charging values per day for one charging station for one year
-                for (var i = 0; i < _daysPerYear; i++)
-                {
-                    // calculate the charging value per tick
-                    for (var j = 0; j < _ticksPerDay / 4; j++)
-                    {
-                        // calculate the probability that a car needs charging and how long it needs to charging
-                        // depending on the power consumption of the car and the charging power of the charging station
-                        // and the _carChargingDemandInPercent array
-                        var demandIndex = new Random().Next(_carChargingDemandInPercent.Length);
-
-                        var carNeedsChargingProbability =
-                            _carChargingDemandInPercent[demandIndex];
-                        chargingNeedInKiloWatt = (_carChargingDemandInKm[demandIndex] / 100) * 18;
-                        // calculate the arrival probability per tick and multiply it with the arrival probability multiplier,
-                        // by getting the probability from the arrival distribution for each hour of the day
-                        var arrivalProbabilityPerHour =
-                            _arrivalDistribution[j] * simulationInput.ArrivalProbabilityMultiplier;
-
-                        // decide randomly if a car arrives depending on the arrival probability per hour and the arrival probability multiplier
-                        var carArrives = new Random().NextDouble() < arrivalProbabilityPerHour;
-                        if ((carArrives && !chargingStationIsUsed) || chargingStationIsUsed)
-                        {
-                            // decide if the car needs charging with random and the carNeedsChargingProbability
-                            if (new Random().NextDouble() < carNeedsChargingProbability || chargingStationIsUsed)
-                            {
-                                // for each tick, calculate the charging value per tick and if the charging station is used 
-                                while (chargingNeedInKiloWatt > 0) // hääöääääääääää
-                                {
-                                    for (var k = 0; k < 4; k++)
-                                    {
-                                        var currentPower = chargingStation.ChargingPower / 4.0;
-                                        // calculate the charged energy with the minimum of current power and the charging chargingNeedInKiloWatt
-                                        chargedByCurrentCar += Math.Min(currentPower, chargingNeedInKiloWatt);
-                                        // calculate the charging value per day with the minimum of current power and the charging chargingNeedInKiloWatt
-                                        chargingValuePerDay += Math.Min(currentPower, chargingNeedInKiloWatt);
-                                        chargingNeedInKiloWatt -= currentPower;
-
-                                        totalEnergyCharged += Math.Min(currentPower, chargingNeedInKiloWatt);
-                                        numberOfChargingEventsPerYear++; // ????????
-                                        if (!(chargingNeedInKiloWatt > 0))
-                                        {
-                                            // if the car doesn't need charging anymore, look for the next car that needs charging
-                                            // and calculate the charging value per tick
-                                            carArrives = new Random().NextDouble() < arrivalProbabilityPerHour;
-                                            if (carArrives)
-                                            {
-                                                chargingStationIsUsed = true;
-                                                demandIndex = new Random().Next(_carChargingDemandInPercent.Length);
-                                                carNeedsChargingProbability =
-                                                    _carChargingDemandInPercent[demandIndex];
-                                                chargingNeedInKiloWatt =
-                                                    (_carChargingDemandInKm[demandIndex] / 100) * 18;
-                                            }
-                                            else
-                                            {
-                                                // if the car is charged, calculate if a new car arrives
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    chargingValues.Add(chargingValuePerDay);
-                    // calculate the actual max demand of all charged cars per day so far
-                    actualMaxDemand = chargingValuePerDay > actualMaxDemand ? chargingValuePerDay : actualMaxDemand;
-
-                    chargingValuePerDay = 0;
-                }
-
-                // save all charging values per charging station per day in a list
-                chargingValuesPerChargingStation.Add(chargingValues);
-                // calculate the actual maximum power output of all charging stations looked at so far
-
-
-                // calculate the number of charging events per year/month/week/day
-                numberOfChargingEventsPerYear =
-                    numberOfChargingEventsPerMonth += (int)chargingValues.Count / _ticksPerMonth;
-                numberOfChargingEventsPerWeek += (int)chargingValues.Count / _ticksPerWeek;
-                numberOfChargingEventsPerDay += (int)chargingValues.Count / _ticksPerDay;
-                // calculate the deviation of the concurrency factor
-                concurrencyFactor = actualMaxDemand / theoreticalMaxPowerOutput;
-                deviationOfConcurrencyFactor = Math.Abs(1 - concurrencyFactor);
-
-                chargingValuesPerChargingStation.Add(chargingValues);
-
-                Console.WriteLine(
-                    $"Number of chargepoints: {simulationInput.ChargingStations.IndexOf(chargingStation) + 1}");
-                Console.WriteLine($"Total energy consumed: {totalEnergyCharged} kWh");
-                Console.WriteLine($"Theoretical maximum power output: {theoreticalMaxPowerOutput} kW");
-                Console.WriteLine($"Actual maximum power output: {actualMaxDemand} kW");
-                Console.WriteLine($"Concurrency factor: {concurrencyFactor}");
-                Console.WriteLine($"Deviation of concurrency factor: {deviationOfConcurrencyFactor}");
-                Console.WriteLine();
+            var maxPower = 0.0;
+            for (var i = 0; i < _ticksPerDay * 365; ++i)
+            {
+                maxPower = Math.Max(cs.Sum(c => c.ChargedPowerPerTick[i]), maxPower);
             }
 
-            // calculate the total concurrency factor
-            concurrencyFactor = actualMaxDemand / theoreticalMaxPowerOutput;
-            // calculate the deviation of the concurrency factor 
-            deviationOfConcurrencyFactor = Math.Abs(1 - concurrencyFactor);
-
-            // assign the values to the simulationOutput
-
-            simulationOutput.TotalEnergyCharged = (int)totalEnergyCharged;
-            simulationOutput.NumberOfChargingEventsPerYear = numberOfChargingEventsPerYear;
-            simulationOutput.NumberOfChargingEventsPerMonth = numberOfChargingEventsPerMonth;
-            simulationOutput.NumberOfChargingEventsPerWeek = numberOfChargingEventsPerWeek;
-            simulationOutput.NumberOfChargingEventsPerDay = numberOfChargingEventsPerDay;
-            simulationOutput.DeviationOfConcurrencyFactor = deviationOfConcurrencyFactor;
-            simulationOutput.ChargingValuesPerChargingStationPerDay = new List<List<double>>();
-
-            return simulationOutput;
+            var theoreticalMaxPower = cs.Sum((c) => c.ChargingPower);
+            var concurrencyFactor = maxPower / theoreticalMaxPower;
+            // save the simulation output to simulationOutput and return it
+            var simOutput = new SimulationOutput
+            {
+                TotalEnergyCharged = theoreticalMaxPower,
+                NumberOfChargingEventsPerYear = cs.Sum(c => c.CountChargingEvents),
+                NumberOfChargingEventsPerMonth = cs.Sum(c => c.CountChargingEventsPerDay.GetRange(0, 30).Sum()),
+                NumberOfChargingEventsPerWeek = cs.Sum(c => c.CountChargingEventsPerDay.GetRange(0, 7).Sum()),
+                NumberOfChargingEventsPerDay = cs.Sum(c => c.CountChargingEventsPerDay.Sum()),
+                DeviationOfConcurrencyFactor = concurrencyFactor,
+                ChargingValuesPerChargingStationPerDay = cs.Select(c => c.ChargedPowerPerDay).ToList()
+            };
+            return simOutput;
         }
 
-        public int GetMaxPK<T>(IQueryable<T> query, string pkPropertyName)
+
+        internal void SimYear(List<SimChargingStation> list,
+            int? averageCarConsumptionPer100Km, double arrivalMultiplier)
         {
-            // TODO: add argument checks
-            var parameter = Expression.Parameter(typeof(T));
-            var body = Expression.Property(parameter, pkPropertyName);
-            var lambda = Expression.Lambda<Func<T, int>>(body, parameter);
-            var result = query.Max(lambda);
-            return result;
+            Enumerable.Range(0, 365).ToList().ForEach(_ =>
+                SimulateDay(list, averageCarConsumptionPer100Km, arrivalMultiplier));
+        }
+
+        internal void SimulateDay(List<SimChargingStation> list,
+            int? averageCarConsumptionPer100Km, double arrivalMultiplier)
+        {
+            var arrivalDistribution = new List<double>
+            {
+                .0094, .0094, .0094, .0094, .0094, .0094, .0094, .0094, .0283, .0283, .0566, .0566, .0566, .0755, .0755,
+                .0755, .1038, .1038, .1038, .0472,
+                .0472, .0472, .0094, .0094
+            };
+            // for each tick
+            for (var i = 0; i < _ticksPerDay; i++)
+            {
+                // simulate the tick and get the charged power per charging station
+                SimTick(list, arrivalDistribution[i / _ticksPerHour] * (double)arrivalMultiplier,
+                    averageCarConsumptionPer100Km);
+            }
+
+            // save the charging stations values per day
+            foreach (var cs in list)
+            {
+                cs.SetChargedPowerPerDay();
+                cs.SetChargingEventsPerDay();
+            }
+        }
+
+        internal static List<double> SimTick(List<SimChargingStation> list, double arrivalProbability,
+            int? averageCarConsumptionPer100Km)
+        {
+            var chargedPerStation = new List<double>();
+            // for each charging station
+            foreach (var cs in list)
+            {
+                // check if a car arrives
+                cs.Arrive(arrivalProbability, averageCarConsumptionPer100Km);
+                // charge the car currently charging
+                chargedPerStation.Add(cs.ChargeCar());
+
+
+                // save the charged power
+                // save the number of charging events
+                // save the theoretical maximum used charging power
+                // save the deviation of the concurrency factor
+                // save the total energy charged
+                // save the charging values per charging station per day
+                // save the actual maximum used charging power
+            }
+
+            return chargedPerStation; // return the charged power per tick per charging station
+        }
+    }
+
+    public class SimChargingStation
+    {
+        public int ChargingPower { get; set; } // in kw per tick
+        private Car? Car { get; set; }
+        public int CountChargingEvents { get; private set; } = 0;
+        public double ChargedPower { get; private set; } = 0;
+        public List<int> CountChargingEventsPerDay { get; private set; } = new List<int>();
+        public List<double> ChargedPowerPerDay { get; private set; } = new List<double>();
+        public List<double> ChargedPowerPerTick { get; private set; } = new List<double>();
+
+
+        public void SetChargingEventsPerDay()
+        {
+            var countChargingEventsInPast = CountChargingEventsPerDay.Sum();
+            var currentCountChargingEvents = CountChargingEvents - countChargingEventsInPast;
+            CountChargingEventsPerDay.Add(currentCountChargingEvents);
+        }
+
+        public void SetChargedPowerPerDay()
+        {
+            var chargedPowerInPast = ChargedPowerPerDay.Sum();
+            var currentChargedPower = ChargedPower - chargedPowerInPast;
+            ChargedPowerPerDay.Add(currentChargedPower);
+        }
+
+        public double ChargeCar()
+        {
+            if (Car is null)
+            {
+                ChargedPowerPerTick.Add(0);
+                return 0;
+            }
+
+            var chargedPower = Math.Min(ChargingPower, Car.ChargingDemand);
+            Car.ChargingDemand -= ChargingPower; // charging power is in kw and per tick
+            if (Car.ChargingDemand <= 0)
+            {
+                ChargedPowerPerTick.Add(0);
+                Car = null;
+            }
+
+            ChargedPowerPerTick.Add(chargedPower);
+            ChargedPower += chargedPower;
+            return chargedPower;
+        }
+
+        public void Arrive(double arrivalProbability, int? averageCarConsumptionPer100Km)
+        {
+            if (Car is not null)
+            {
+                return;
+            }
+
+            if (new Random().NextDouble() > arrivalProbability)
+            {
+                return;
+            }
+
+            var car = averageCarConsumptionPer100Km is null ? new Car() : new Car((int)averageCarConsumptionPer100Km);
+            if (car.ChargingDemand == 0)
+            {
+                return;
+            }
+
+            Car = car;
+            CountChargingEvents++;
+        }
+    }
+
+    public class Car
+    {
+        public Car(int consumptionPer100Km = 18)
+        {
+            ChargingDemand = GetChargingDemandInKw(consumptionPer100Km);
+        }
+
+        public double ChargingDemand { get; set; }
+
+        private static double GetChargingDemandInKw(int consumptionPer100Km)
+        {
+            var random = new Random().NextDouble();
+            var chargingDemandInKm = random switch
+            {
+                < 0.3431 => 0.0,
+                < 0.3921 => 5.0,
+                < 0.4901 => 10.0,
+                < 0.6077 => 20.0,
+                < 0.6959 => 30.0,
+                < 0.8135 => 50.0,
+                < 0.9213 => 100.0,
+                < 0.9703 => 200.0,
+                < 0.9997 => 300.0,
+                _ => 0 // statistic outlier 1-0.9997
+            };
+            return chargingDemandInKm / 100.0 * consumptionPer100Km;
         }
     }
 }

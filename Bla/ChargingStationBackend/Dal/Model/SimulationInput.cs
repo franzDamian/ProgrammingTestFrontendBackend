@@ -11,7 +11,7 @@ namespace Dal.Model
         /*  the number of charge points
             a multiplier for the arrival probability to increase the amount of cars arriving to charge(20-200%, default: 100%)
             the consumption of the cars (default: 18 kWh)
-            the charging power per chargepoint (default: 11 kW)
+            the charging power per charge point (default: 11 kW)
         */
         public int id { get; set; }
         public List<ChargingStation> ChargingStations { get; set; } = new List<ChargingStation>();

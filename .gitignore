@@ -42,7 +42,6 @@ dist/
 dist-ssr/
 *.local
 
-# Mongodb files
 *.env
 *.dll
 *.lock
