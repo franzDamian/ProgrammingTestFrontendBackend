@@ -66,7 +66,7 @@ namespace ChargePointAPI.Controllers
                 }).ToList()
             };
             _context.SimulationInputs.Add(simInput);
-            var simulationOutput = await _simulationService.SimulationRun(simInput);
+            var simulationOutput = _simulationService.SimulationRun(simInput);
             _context.SimulationOutputs.Add(simulationOutput);
             // Save the simulationInput and simulationOutput to the database
             await _context.SaveChangesAsync();

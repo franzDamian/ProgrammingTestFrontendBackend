@@ -51,8 +51,11 @@ dist-ssr/
 *.log
 *.log.*
 Bla/ChargingStationBackend/.vs/
-Bla/ChargingStationBackend/ChargingStationBackend/bin/
-Bla/ChargingStationBackend/ChargingStationBackend/obj/
-Bla/ChargingStationBackend/ChargingStationBackend/Properties/
-/Bla/ChargingStationBackend/Dal/obj/
-/Bla/ChargingStationBackend/Dal/bin/
+*.editorconfig
+Debug/
+obj/
+bin/
+*.exe
+*.pdb
+Properties/
+/Bla/ChargingStationBackend/Dal/obj/Debug/net6.0/Dal.GeneratedMSBuildEditorConfig.editorconfig
