@@ -6,8 +6,6 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { ChargingStationBackendClient } from '../../infrastructure/generated/client.g';
-import { useState } from 'react';
 import { NumberOfCharginStationWithPower } from './charging-stations-add';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({

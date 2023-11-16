@@ -1,4 +1,4 @@
-import { Box, Card, Slider, Typography } from "@mui/material";
+import { Slider, Typography } from "@mui/material";
 
 type ChargingStationsNumberSliderProps = {
     readonly value: number;
