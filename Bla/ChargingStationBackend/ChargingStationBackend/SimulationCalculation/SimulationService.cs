@@ -53,9 +53,11 @@ namespace ChargingStationBackend.SimulationCalculation
                 SimulateDay(list, averageCarConsumptionPer100Km, arrivalMultiplier));
         }
 
+
         internal void SimulateDay(List<SimChargingStation> list,
             int? averageCarConsumptionPer100Km, double arrivalMultiplier)
         {
+            // the arrival distribution per hour
             var arrivalDistribution = new List<double>
             {
                 .0094, .0094, .0094, .0094, .0094, .0094, .0094, .0094, .0283, .0283, .0566, .0566, .0566, .0755, .0755,
@@ -89,15 +91,6 @@ namespace ChargingStationBackend.SimulationCalculation
                 cs.Arrive(arrivalProbability, averageCarConsumptionPer100Km);
                 // charge the car currently charging
                 chargedPerStation.Add(cs.ChargeCar());
-
-
-                // save the charged power
-                // save the number of charging events
-                // save the theoretical maximum used charging power
-                // save the deviation of the concurrency factor
-                // save the total energy charged
-                // save the charging values per charging station per day
-                // save the actual maximum used charging power
             }
 
             return chargedPerStation; // return the charged power per tick per charging station
@@ -109,10 +102,10 @@ namespace ChargingStationBackend.SimulationCalculation
         public int ChargingPower { get; set; } // in kw per tick
         private Car? Car { get; set; }
         public int CountChargingEvents { get; private set; } = 0;
-        public double ChargedPower { get; private set; } = 0;
+        public double ChargedPower { get; private set; } = 0; // in kw
         public List<int> CountChargingEventsPerDay { get; private set; } = new List<int>();
         public List<double> ChargedPowerPerDay { get; private set; } = new List<double>();
-        public List<double> ChargedPowerPerTick { get; private set; } = new List<double>();
+        public List<double> ChargedPowerPerTick { get; private set; } = new List<double>(); 
 
 
         public void SetChargingEventsPerDay()

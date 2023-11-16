@@ -1,20 +1,20 @@
 import { Box, Card, Slider, Typography } from "@mui/material";
 
-type ChargingStationsSliderProps = {
+type ChargingStationsNumberSliderProps = {
     readonly value: number;
     readonly setValue: (_: number) => void;
 }
 
-export const ChargingStationsSlider = (props: ChargingStationsSliderProps) => {
+export const ChargingStationsNumberSlider = (props: ChargingStationsNumberSliderProps) => {
     return (
         <>
-                <Typography variant="overline">Charging Station</Typography>
+                <Typography variant="overline">Number of Charging Stations</Typography>
                     <Slider onChange={(_, v) => props.setValue(v as number)}
                 value={props.value}
                         valueLabelDisplay="auto"
                         step={1}
                         min={1}
-                        max={30}
+                        max={50}
                         />
           </>  
     );

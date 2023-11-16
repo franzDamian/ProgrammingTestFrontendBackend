@@ -8,4 +8,5 @@ const customFetch = {
 }
 
 // bei neuem Controller muss hier ein neuer Client erstellt werden
+
 export const ChargerClient = new  ChargingStationBackendClient.ChargerClient("http://localhost:7067", customFetch)
