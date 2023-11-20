@@ -6,7 +6,11 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { NumberOfCharginStationWithPower } from './charging-stations-add';
+import { NumberOfCharginStationWithPower, NumberOfCharginStationWithPowerWithId } from './charging-stations-add';
+import { Box, Button, IconButton } from '@mui/material';
+import { Delete as DeleteIcon } from '@mui/icons-material';
+import { ChargerClient } from '../../infrastructure/api';
+import { ChargingStationBackendClient } from '../../infrastructure/generated/client.g';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -30,18 +34,29 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 
 type ChargingStationProps = {
-    readonly rows: NumberOfCharginStationWithPower[];
+    readonly rows: NumberOfCharginStationWithPowerWithId[];
+    readonly handleDelete: (_: NumberOfCharginStationWithPowerWithId) => void;
 }
 
 export default function ChargingStationTable(props: ChargingStationProps) {
-    return (
 
+    const handleSubmit = () => {
+        ChargerClient.postSimulationInput({
+            chargingStations: props.rows.flatMap(el => [...Array(el.count).keys()]
+                .map(_ => ({ chargingPower: el.power } as ChargingStationBackendClient.ChargingStationDto)))
+        } as ChargingStationBackendClient.SimulationInputDto)
+            .then(() => console.log("done"))
+            .catch(() => console.log("error"))
+    }
+    return (
+        <Box display="flex" justifyContent="space-between" flexDirection="column">
         <TableContainer component={Paper}>
             <Table sx={{ }} aria-label="customized table">
                 <TableHead>
                     <TableRow>
                         <StyledTableCell>Charging Station</StyledTableCell>
                         <StyledTableCell align="right">Power</StyledTableCell>
+                        <StyledTableCell></StyledTableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -51,10 +66,17 @@ export default function ChargingStationTable(props: ChargingStationProps) {
                                 {row.count}
                             </StyledTableCell>
                             <StyledTableCell align="right">{row.power}</StyledTableCell>
+                            <StyledTableCell>
+                            <IconButton aria-label="delete" size="small" onClick={() => props.handleDelete(row)}>
+                                <DeleteIcon color="error" fontSize="inherit"/>
+                            </IconButton>
+                            </StyledTableCell>
                         </StyledTableRow>
                     ))}
                 </TableBody>
             </Table>
-        </TableContainer>
+            </TableContainer>
+            <Button variant="outlined" onClick={() => handleSubmit()}>Submit</Button>
+        </Box>
     );
 }

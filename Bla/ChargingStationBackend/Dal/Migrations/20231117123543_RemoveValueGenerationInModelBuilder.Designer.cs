@@ -3,6 +3,7 @@ using System;
 using Dal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Dal.Migrations
 {
     [DbContext(typeof(ChargingStationContext))]
-    partial class ChargingStationContextModelSnapshot : ModelSnapshot
+    [Migration("20231117123543_RemoveValueGenerationInModelBuilder")]
+    partial class RemoveValueGenerationInModelBuilder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,18 +67,14 @@ namespace Dal.Migrations
 
             modelBuilder.Entity("Dal.Model.SimulationOutput", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
                     b.Property<string>("ChargingValuesPerChargingStationPerDay")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<double>("DeviationOfConcurrencyFactor")
                         .HasColumnType("double precision");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("integer");
 
                     b.Property<int>("NumberOfChargingEventsPerDay")
                         .HasColumnType("integer");
@@ -92,7 +91,7 @@ namespace Dal.Migrations
                     b.Property<int>("TotalEnergyCharged")
                         .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                    b.HasKey("ChargingValuesPerChargingStationPerDay");
 
                     b.ToTable("SimulationOutputs");
                 });

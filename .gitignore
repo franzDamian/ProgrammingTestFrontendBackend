@@ -58,3 +58,5 @@ bin/
 *.pdb
 Properties/
 /Bla/ChargingStationBackend/Dal/obj/Debug/net6.0/Dal.GeneratedMSBuildEditorConfig.editorconfig
+/Bla/ChargingStationBackend/Dal/obj/Debug/net6.0/Dal.csproj.FileListAbsolute.txt
+/Bla/ChargingStationBackend/Dal/bin/Debug/net6.0/Dal.pdb

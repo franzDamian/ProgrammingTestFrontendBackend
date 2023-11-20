@@ -11,8 +11,6 @@ namespace ChargingStationBackend.SimulationCalculation
 
         public SimulationOutput SimulationRun(SimulationInput simulationInput)
         {
-            if (simulationInput.AverageConsumptionOfCars == 0)
-                throw new System.Exception("AverageConsumptionOfCars is 0");
             if (simulationInput.ChargingStations.Count == 0)
                 throw new System.Exception("ChargingStations is empty");
             // transform the input to a list of charging stations
@@ -21,7 +19,8 @@ namespace ChargingStationBackend.SimulationCalculation
                 ChargingPower = cs.ChargingPower
             }).ToList();
 
-            SimYear(cs, simulationInput.AverageConsumptionOfCars, simulationInput.ArrivalProbabilityMultiplier);
+            SimYear(cs, simulationInput.AverageConsumptionOfCars == 0 ? 18 : simulationInput.AverageConsumptionOfCars,
+                simulationInput.ArrivalProbabilityMultiplier == 0 ? 1 : simulationInput.ArrivalProbabilityMultiplier);
 
             var maxPower = 0.0;
             for (var i = 0; i < _ticksPerDay * 365; ++i)
@@ -34,7 +33,7 @@ namespace ChargingStationBackend.SimulationCalculation
             // save the simulation output to simulationOutput and return it
             var simOutput = new SimulationOutput
             {
-                TotalEnergyCharged = theoreticalMaxPower,
+                TotalEnergyCharged = (int)maxPower,
                 NumberOfChargingEventsPerYear = cs.Sum(c => c.CountChargingEvents),
                 NumberOfChargingEventsPerMonth = cs.Sum(c => c.CountChargingEventsPerDay.GetRange(0, 30).Sum()),
                 NumberOfChargingEventsPerWeek = cs.Sum(c => c.CountChargingEventsPerDay.GetRange(0, 7).Sum()),
@@ -105,7 +104,7 @@ namespace ChargingStationBackend.SimulationCalculation
         public double ChargedPower { get; private set; } = 0; // in kw
         public List<int> CountChargingEventsPerDay { get; private set; } = new List<int>();
         public List<double> ChargedPowerPerDay { get; private set; } = new List<double>();
-        public List<double> ChargedPowerPerTick { get; private set; } = new List<double>(); 
+        public List<double> ChargedPowerPerTick { get; private set; } = new List<double>();
 
 
         public void SetChargingEventsPerDay()

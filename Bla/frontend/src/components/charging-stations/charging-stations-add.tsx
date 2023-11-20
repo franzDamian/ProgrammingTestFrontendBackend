@@ -9,15 +9,20 @@ export type NumberOfCharginStationWithPower = {
     power: number;
 }
 
+export type NumberOfCharginStationWithPowerWithId = NumberOfCharginStationWithPower & {
+    id: number;
+}
+
+
 export const ChargingStationsAdd = () => {
-    const [chargingStations, setChargingStations] = useState<NumberOfCharginStationWithPower[]>([]);
+    const [chargingStations, setChargingStations] = useState<NumberOfCharginStationWithPowerWithId[]>([]);
     return (
         <Box>
             <Card sx={{ padding: 2 }}>
                 <Stack direction="row">
                     <ChargingStationAdder
-                        handleAdd={(value) => setChargingStations(curr => [...curr, value])} />
-                    <ChargingStationTable rows={chargingStations} />
+                        handleAdd={(value) => setChargingStations(curr => [...curr, { count: value.count, power: value.power, id: curr.length }])} />
+                    <ChargingStationTable rows={chargingStations} handleDelete={(value) => setChargingStations(curr => [...curr.filter(el => el.id !== value.id)])} />
                 </Stack>
             </Card>
         </Box>);
