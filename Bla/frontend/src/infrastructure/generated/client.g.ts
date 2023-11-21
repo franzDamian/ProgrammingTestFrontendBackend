@@ -129,40 +129,6 @@ export class ChargerClient {
         return Promise.resolve<ChargingStation[]>(null as any);
     }
 
-    postSimulationOutput(simulationOutputDto: SimulationOutputDto): Promise<void> {
-        let url_ = this.baseUrl + "/Charger/AddSimulationOutput";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(simulationOutputDto);
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processPostSimulationOutput(_response);
-        });
-    }
-
-    protected processPostSimulationOutput(response: Response): Promise<void> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            return;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<void>(null as any);
-    }
-
     getOutPut(): Promise<SimulationOutput[]> {
         let url_ = this.baseUrl + "/Charger/getOutput";
         url_ = url_.replace(/[?&]$/, "");
@@ -309,6 +275,7 @@ export interface ISimulationInputDto {
 
 export class ChargingStationDto implements IChargingStationDto {
     chargingPower?: number;
+    chargingValuesForEachDayAndHour?: number[][];
 
     constructor(data?: IChargingStationDto) {
         if (data) {
@@ -322,6 +289,11 @@ export class ChargingStationDto implements IChargingStationDto {
     init(_data?: any) {
         if (_data) {
             this.chargingPower = _data["chargingPower"];
+            if (Array.isArray(_data["chargingValuesForEachDayAndHour"])) {
+                this.chargingValuesForEachDayAndHour = [] as any;
+                for (let item of _data["chargingValuesForEachDayAndHour"])
+                    this.chargingValuesForEachDayAndHour!.push(item);
+            }
         }
     }
 
@@ -335,6 +307,11 @@ export class ChargingStationDto implements IChargingStationDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["chargingPower"] = this.chargingPower;
+        if (Array.isArray(this.chargingValuesForEachDayAndHour)) {
+            data["chargingValuesForEachDayAndHour"] = [];
+            for (let item of this.chargingValuesForEachDayAndHour)
+                data["chargingValuesForEachDayAndHour"].push(item);
+        }
         return data;
     }
 
@@ -348,11 +325,13 @@ export class ChargingStationDto implements IChargingStationDto {
 
 export interface IChargingStationDto {
     chargingPower?: number;
+    chargingValuesForEachDayAndHour?: number[][];
 }
 
 export class ChargingStation implements IChargingStation {
     id?: number;
     chargingPower?: number;
+    chargingValuesForEachDayAndHour?: number[][];
 
     constructor(data?: IChargingStation) {
         if (data) {
@@ -367,6 +346,11 @@ export class ChargingStation implements IChargingStation {
         if (_data) {
             this.id = _data["id"];
             this.chargingPower = _data["chargingPower"];
+            if (Array.isArray(_data["chargingValuesForEachDayAndHour"])) {
+                this.chargingValuesForEachDayAndHour = [] as any;
+                for (let item of _data["chargingValuesForEachDayAndHour"])
+                    this.chargingValuesForEachDayAndHour!.push(item);
+            }
         }
     }
 
@@ -381,6 +365,11 @@ export class ChargingStation implements IChargingStation {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["chargingPower"] = this.chargingPower;
+        if (Array.isArray(this.chargingValuesForEachDayAndHour)) {
+            data["chargingValuesForEachDayAndHour"] = [];
+            for (let item of this.chargingValuesForEachDayAndHour)
+                data["chargingValuesForEachDayAndHour"].push(item);
+        }
         return data;
     }
 
@@ -395,86 +384,12 @@ export class ChargingStation implements IChargingStation {
 export interface IChargingStation {
     id?: number;
     chargingPower?: number;
-}
-
-export class SimulationOutputDto implements ISimulationOutputDto {
-    chargingValuesPerChargingStationPerDay?: number[][];
-    totalEnergyCharged?: number;
-    numberOfChargingEventsPerYear?: number;
-    numberOfChargingEventsPerMonth?: number;
-    numberOfChargingEventsPerWeek?: number;
-    numberOfChargingEventsPerDay?: number;
-    deviationOfConcurrencyFactor?: number;
-
-    constructor(data?: ISimulationOutputDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            if (Array.isArray(_data["chargingValuesPerChargingStationPerDay"])) {
-                this.chargingValuesPerChargingStationPerDay = [] as any;
-                for (let item of _data["chargingValuesPerChargingStationPerDay"])
-                    this.chargingValuesPerChargingStationPerDay!.push(item);
-            }
-            this.totalEnergyCharged = _data["totalEnergyCharged"];
-            this.numberOfChargingEventsPerYear = _data["numberOfChargingEventsPerYear"];
-            this.numberOfChargingEventsPerMonth = _data["numberOfChargingEventsPerMonth"];
-            this.numberOfChargingEventsPerWeek = _data["numberOfChargingEventsPerWeek"];
-            this.numberOfChargingEventsPerDay = _data["numberOfChargingEventsPerDay"];
-            this.deviationOfConcurrencyFactor = _data["deviationOfConcurrencyFactor"];
-        }
-    }
-
-    static fromJS(data: any): SimulationOutputDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new SimulationOutputDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.chargingValuesPerChargingStationPerDay)) {
-            data["chargingValuesPerChargingStationPerDay"] = [];
-            for (let item of this.chargingValuesPerChargingStationPerDay)
-                data["chargingValuesPerChargingStationPerDay"].push(item);
-        }
-        data["totalEnergyCharged"] = this.totalEnergyCharged;
-        data["numberOfChargingEventsPerYear"] = this.numberOfChargingEventsPerYear;
-        data["numberOfChargingEventsPerMonth"] = this.numberOfChargingEventsPerMonth;
-        data["numberOfChargingEventsPerWeek"] = this.numberOfChargingEventsPerWeek;
-        data["numberOfChargingEventsPerDay"] = this.numberOfChargingEventsPerDay;
-        data["deviationOfConcurrencyFactor"] = this.deviationOfConcurrencyFactor;
-        return data;
-    }
-
-    clone(): SimulationOutputDto {
-        const json = this.toJSON();
-        let result = new SimulationOutputDto();
-        result.init(json);
-        return result;
-    }
-}
-
-export interface ISimulationOutputDto {
-    chargingValuesPerChargingStationPerDay?: number[][];
-    totalEnergyCharged?: number;
-    numberOfChargingEventsPerYear?: number;
-    numberOfChargingEventsPerMonth?: number;
-    numberOfChargingEventsPerWeek?: number;
-    numberOfChargingEventsPerDay?: number;
-    deviationOfConcurrencyFactor?: number;
+    chargingValuesForEachDayAndHour?: number[][];
 }
 
 export class SimulationOutput implements ISimulationOutput {
     id?: number;
-    chargingValuesPerChargingStationPerDay?: number[][];
+    chargingStationSimulationResult?: ChargingStation[];
     totalEnergyCharged?: number;
     numberOfChargingEventsPerYear?: number;
     numberOfChargingEventsPerMonth?: number;
@@ -494,10 +409,10 @@ export class SimulationOutput implements ISimulationOutput {
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
-            if (Array.isArray(_data["chargingValuesPerChargingStationPerDay"])) {
-                this.chargingValuesPerChargingStationPerDay = [] as any;
-                for (let item of _data["chargingValuesPerChargingStationPerDay"])
-                    this.chargingValuesPerChargingStationPerDay!.push(item);
+            if (Array.isArray(_data["chargingStationSimulationResult"])) {
+                this.chargingStationSimulationResult = [] as any;
+                for (let item of _data["chargingStationSimulationResult"])
+                    this.chargingStationSimulationResult!.push(ChargingStation.fromJS(item));
             }
             this.totalEnergyCharged = _data["totalEnergyCharged"];
             this.numberOfChargingEventsPerYear = _data["numberOfChargingEventsPerYear"];
@@ -518,10 +433,10 @@ export class SimulationOutput implements ISimulationOutput {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
-        if (Array.isArray(this.chargingValuesPerChargingStationPerDay)) {
-            data["chargingValuesPerChargingStationPerDay"] = [];
-            for (let item of this.chargingValuesPerChargingStationPerDay)
-                data["chargingValuesPerChargingStationPerDay"].push(item);
+        if (Array.isArray(this.chargingStationSimulationResult)) {
+            data["chargingStationSimulationResult"] = [];
+            for (let item of this.chargingStationSimulationResult)
+                data["chargingStationSimulationResult"].push(item.toJSON());
         }
         data["totalEnergyCharged"] = this.totalEnergyCharged;
         data["numberOfChargingEventsPerYear"] = this.numberOfChargingEventsPerYear;
@@ -542,7 +457,7 @@ export class SimulationOutput implements ISimulationOutput {
 
 export interface ISimulationOutput {
     id?: number;
-    chargingValuesPerChargingStationPerDay?: number[][];
+    chargingStationSimulationResult?: ChargingStation[];
     totalEnergyCharged?: number;
     numberOfChargingEventsPerYear?: number;
     numberOfChargingEventsPerMonth?: number;

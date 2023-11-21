@@ -10,16 +10,16 @@ namespace Dal.Model
     {
         /*
             For the output, you could visualize:
-                The charging values (in kW) per chargepoint at a useful aggregation level
+                The charging values (in kW) per charge point at a useful aggregation level
                 An exemplary day
                 The total energy charged (in kWh)
                 The number of charging events per year/month/week/day
-                The deviation of the concurrency factor from the bonus task could be displayed (ifthe previous bonus task was completed).
+                The deviation of the concurrency factor from the bonus task could be displayed (if the previous bonus task was completed).
          */
 
         public int Id { get; set; }
 
-        public List<List<double>> ChargingValuesPerChargingStationPerDay { get; set; } = new();
+        public List<ChargingStation> ChargingStationSimulationResult { get; set; } = new();
         public int TotalEnergyCharged { get; set; }
         public int NumberOfChargingEventsPerYear { get; set; }
         public int NumberOfChargingEventsPerMonth { get; set; }

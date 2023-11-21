@@ -11,5 +11,6 @@ namespace Dal.Model
     {
         public int Id { get; set; }
         public int ChargingPower { get; set; }
+        public List<List<double>> ChargingValuesForEachDayAndHour { get; set; } = new();
     }
 }

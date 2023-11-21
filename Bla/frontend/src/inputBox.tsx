@@ -1,33 +1,39 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import { InputAdornment } from '@mui/material';
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import { InputAdornment } from "@mui/material";
 
-export default function FormPropsTextFields() {
-  return (
-    <Box
-      component="form"
-      sx={{
-        '& .MuiTextField-root': { m: 1, width: '25ch' },
-      }}
-      noValidate
-      autoComplete="off"
-    >
-      <div>
-        
-        <TextField
-        id="outlined-number"
-        label="consumption of the cars"
-        type="number"
-        defaultValue={18}
-        InputLabelProps={{
-          shrink: true,
-        }}
-        InputProps={{
-            endAdornment: <InputAdornment position="start">kW</InputAdornment>
-        }}
-        />
-      </div>
-    </Box>
-  );
-}
+type FormPropsTextFieldsProps = {
+	readonly label: string;
+	readonly type: string;
+	readonly defaultValue: number;
+	readonly min: number;
+	readonly max: number;
+	readonly step: number;
+	readonly endAdornment: string;
+	readonly shrink: boolean;
+};
+
+export const FormPropsTextFields = (props: FormPropsTextFieldsProps) => {
+	return (
+		<Box component="form" noValidate autoComplete="off">
+			<div>
+				<TextField
+					id="outlined-number"
+					label={props.label}
+					type={props.type}
+					defaultValue={props.defaultValue}
+					InputLabelProps={{
+						shrink: props.shrink,
+					}}
+					InputProps={{
+						endAdornment: (
+							<InputAdornment position="start">
+								{props.endAdornment}
+							</InputAdornment>
+						),
+					}}
+				/>
+			</div>
+		</Box>
+	);
+};

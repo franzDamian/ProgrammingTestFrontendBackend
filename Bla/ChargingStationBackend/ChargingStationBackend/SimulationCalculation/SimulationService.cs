@@ -39,9 +39,32 @@ namespace ChargingStationBackend.SimulationCalculation
                 NumberOfChargingEventsPerWeek = cs.Sum(c => c.CountChargingEventsPerDay.GetRange(0, 7).Sum()),
                 NumberOfChargingEventsPerDay = cs.Sum(c => c.CountChargingEventsPerDay.Sum()),
                 DeviationOfConcurrencyFactor = concurrencyFactor,
-                ChargingValuesPerChargingStationPerDay = cs.Select(c => c.ChargedPowerPerDay).ToList()
+                ChargingStationSimulationResult = cs.Select(c => new ChargingStation
+                {
+                    ChargingPower = c.ChargingPower,
+                    ChargingValuesForEachDayAndHour = new List<List<double>>(GetListOfChargedPowerPerHour(c))
+                }).ToList()
             };
             return simOutput;
+        }
+
+        private List<List<double>> GetListOfChargedPowerPerHour(SimChargingStation simChargingStation)
+        {
+            var chargedPowerPerHourPerDay = new List<List<double>>();
+            for (var i = 0; i < 365; ++i)
+            {
+                var chargedPowerPerHour = new List<double>();
+                for (var j = 0; j < 24; ++j)
+                {
+                    // get the charged power per hour by summing up the charged power per tick in that hour
+                    chargedPowerPerHour.Add(simChargingStation.ChargedPowerPerTick
+                        .GetRange(i * _ticksPerDay + j * _ticksPerHour, _ticksPerHour).Sum());
+                }
+
+                chargedPowerPerHourPerDay.Add(chargedPowerPerHour);
+            }
+
+            return chargedPowerPerHourPerDay;
         }
 
 

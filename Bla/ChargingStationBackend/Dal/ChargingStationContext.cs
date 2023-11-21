@@ -29,7 +29,11 @@ namespace Dal
 
             modelBuilder.Entity<SimulationInput>()
                 .Property(simulationInput => simulationInput.AverageConsumptionOfCars).IsRequired();
-
+            modelBuilder
+                .Entity<ChargingStation>()
+                .Property(chargingStation => chargingStation.ChargingValuesForEachDayAndHour)
+                .HasConversion(x => JsonConvert.SerializeObject(x),
+                    y => JsonConvert.DeserializeObject<List<List<double>>>(y) ?? new());
 
             modelBuilder.Entity<SimulationOutput>()
                 .Property(simulationOutput => simulationOutput.TotalEnergyCharged).IsRequired();
@@ -43,11 +47,16 @@ namespace Dal
                 .Property(simulationOutput => simulationOutput.NumberOfChargingEventsPerDay).IsRequired();
             modelBuilder.Entity<SimulationOutput>()
                 .Property(simulationOutput => simulationOutput.DeviationOfConcurrencyFactor).IsRequired();
-            modelBuilder
-                .Entity<SimulationOutput>()
-                .Property(simulationOutput => simulationOutput.ChargingValuesPerChargingStationPerDay)
+
+            modelBuilder.Entity<SimulationOutput>()
+                .Property(simulationOutput => simulationOutput.ChargingStationSimulationResult)
                 .HasConversion(x => JsonConvert.SerializeObject(x),
-                    y => JsonConvert.DeserializeObject<List<List<double>>>(y) ?? new());
+                    y => JsonConvert.DeserializeObject<List<ChargingStation>>(y) ?? new());
+            modelBuilder
+                .Entity<SimulationInput>()
+                .Property(simulationInput => simulationInput.ChargingStations)
+                .HasConversion(x => JsonConvert.SerializeObject(x),
+                    y => JsonConvert.DeserializeObject<List<ChargingStation>>(y) ?? new());
         }
     }
 }

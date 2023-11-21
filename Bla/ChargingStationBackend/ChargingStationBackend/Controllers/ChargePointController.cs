@@ -10,25 +10,19 @@ using Microsoft.EntityFrameworkCore;
 using Dal;
 using Dal.Model;
 
-namespace ChargePointAPI.Controllers
+namespace ChargingStationBackend.Controllers
 {
     public record ChargerDto(int ChargingPower);
 
-    public record ChargingStationDto(int ChargingPower);
+    public record ChargingStationDto(
+        int ChargingPower,
+        List<List<double>> ChargingValuesForEachDayAndHour
+    );
 
     public record SimulationInputDto(
         List<ChargingStationDto> ChargingStations,
         int AverageConsumptionOfCars,
         int ArrivalProbabilityMultiplier);
-
-    public record SimulationOutputDto(
-        List<List<double>> ChargingValuesPerChargingStationPerDay,
-        int TotalEnergyCharged,
-        int NumberOfChargingEventsPerYear,
-        int NumberOfChargingEventsPerMonth,
-        int NumberOfChargingEventsPerWeek,
-        int NumberOfChargingEventsPerDay,
-        double DeviationOfConcurrencyFactor);
 
 
     [ApiController]
@@ -79,21 +73,6 @@ namespace ChargePointAPI.Controllers
             return chargingStations;
         }
 
-        [HttpPost("AddSimulationOutput")]
-        public async Task PostSimulationOutputAsync([FromBody] SimulationOutputDto simulationOutputDto)
-        {
-            _context.SimulationOutputs.Add(new SimulationOutput
-            {
-                ChargingValuesPerChargingStationPerDay = simulationOutputDto.ChargingValuesPerChargingStationPerDay,
-                TotalEnergyCharged = simulationOutputDto.TotalEnergyCharged,
-                NumberOfChargingEventsPerYear = simulationOutputDto.NumberOfChargingEventsPerYear,
-                NumberOfChargingEventsPerMonth = simulationOutputDto.NumberOfChargingEventsPerMonth,
-                NumberOfChargingEventsPerWeek = simulationOutputDto.NumberOfChargingEventsPerWeek,
-                NumberOfChargingEventsPerDay = simulationOutputDto.NumberOfChargingEventsPerDay,
-                DeviationOfConcurrencyFactor = simulationOutputDto.DeviationOfConcurrencyFactor
-            });
-            await _context.SaveChangesAsync();
-        }
 
         [HttpGet("getOutput")]
         public async Task<ActionResult<List<SimulationOutput>>> GetOutPutAsync()
