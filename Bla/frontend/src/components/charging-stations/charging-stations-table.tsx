@@ -40,6 +40,8 @@ type ChargingStationProps = {
 export default function ChargingStationTable(props: ChargingStationProps) {
 	const handleSubmit = () => {
 		ChargerClient.postSimulationInput({
+			arrivalProbabilityMultiplier: 1,
+			averageConsumptionOfCars: 18,
 			chargingStations: props.rows.flatMap((el) =>
 				[...Array(el.count).keys()].map(
 					(_) =>

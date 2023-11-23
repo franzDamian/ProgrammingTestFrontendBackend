@@ -12,6 +12,7 @@ import {
 import { ChargerClient } from "./infrastructure/api";
 import { useEffect, useState } from "react";
 import { ChargingStationsAdd } from "./components/charging-stations/charging-stations-add";
+import { SimulationOutputChart } from "./components/Output/simulation-output-chart";
 
 export type ListType = { key: string; value: string };
 
@@ -58,6 +59,7 @@ export default function App() {
 				{chargingStations && <ChargingValues data={chargingStations} />}
 				<ExemplaryDay />
 				<TotalEnergyCharged />
+				<SimulationOutputChart />
 				<ChargingEvents />
 				{/*<Button onClick={getChargingStations}>Start Simulation</Button>(*/}
 			</Box>
