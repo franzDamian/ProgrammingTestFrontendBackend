@@ -16,17 +16,14 @@ namespace ChargingStationBackend.SimulationCalculation
             // transform the input to a list of charging stations
             var cs = simulationInput.ChargingStations.Select(cs => new SimChargingStation
             {
+                Id = cs.Id,
                 ChargingPower = cs.ChargingPower
             }).ToList();
 
             SimYear(cs, simulationInput.AverageConsumptionOfCars == 0 ? 18 : simulationInput.AverageConsumptionOfCars,
                 simulationInput.ArrivalProbabilityMultiplier == 0 ? 1 : simulationInput.ArrivalProbabilityMultiplier);
 
-            var maxPower = 0.0;
-            for (var i = 0; i < _ticksPerDay * 365; ++i)
-            {
-                maxPower = Math.Max(cs.Sum(c => c.ChargedPowerPerTick[i]), maxPower);
-            }
+            var maxPower = cs.Sum((c) => c.ChargedPower);
 
             var theoreticalMaxPower = cs.Sum((c) => c.ChargingPower);
             var concurrencyFactor = maxPower / theoreticalMaxPower;
@@ -37,10 +34,11 @@ namespace ChargingStationBackend.SimulationCalculation
                 NumberOfChargingEventsPerYear = cs.Sum(c => c.CountChargingEvents),
                 NumberOfChargingEventsPerMonth = cs.Sum(c => c.CountChargingEventsPerDay.GetRange(0, 30).Sum()),
                 NumberOfChargingEventsPerWeek = cs.Sum(c => c.CountChargingEventsPerDay.GetRange(0, 7).Sum()),
-                NumberOfChargingEventsPerDay = cs.Sum(c => c.CountChargingEventsPerDay.Sum()),
+                NumberOfChargingEventsPerDay = cs.Sum(c => c.CountChargingEvents / 365),
                 DeviationOfConcurrencyFactor = concurrencyFactor,
                 ChargingStationSimulationResult = cs.Select(c => new ChargingStation
                 {
+                    Id = c.Id,
                     ChargingPower = c.ChargingPower,
                     ChargingValuesForEachDayAndHour = new List<List<double>>(GetListOfChargedPowerPerHour(c))
                 }).ToList()
@@ -121,6 +119,7 @@ namespace ChargingStationBackend.SimulationCalculation
 
     public class SimChargingStation
     {
+        public int Id { get; set; }
         public int ChargingPower { get; set; } // in kw per tick
         private Car? Car { get; set; }
         public int CountChargingEvents { get; private set; } = 0;
@@ -152,7 +151,7 @@ namespace ChargingStationBackend.SimulationCalculation
                 return 0;
             }
 
-            var chargedPower = Math.Min(ChargingPower, Car.ChargingDemand);
+            var chargedPower = Math.Min(ChargingPower / 4.0, Car.ChargingDemand);
             Car.ChargingDemand -= ChargingPower; // charging power is in kw and per tick
             if (Car.ChargingDemand <= 0)
             {

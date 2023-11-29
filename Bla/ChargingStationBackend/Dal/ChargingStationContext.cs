@@ -26,14 +26,21 @@ namespace Dal
         {
             modelBuilder.Entity<ChargingStation>()
                 .Property(chargingStation => chargingStation.ChargingPower).IsRequired();
-
-            modelBuilder.Entity<SimulationInput>()
-                .Property(simulationInput => simulationInput.AverageConsumptionOfCars).IsRequired();
+            modelBuilder.Entity<ChargingStation>().Property(chargingStation => chargingStation.Id)
+                .ValueGeneratedOnAdd();
             modelBuilder
                 .Entity<ChargingStation>()
                 .Property(chargingStation => chargingStation.ChargingValuesForEachDayAndHour)
                 .HasConversion(x => JsonConvert.SerializeObject(x),
                     y => JsonConvert.DeserializeObject<List<List<double>>>(y) ?? new());
+
+            modelBuilder.Entity<SimulationInput>()
+                .Property(simulationInput => simulationInput.AverageConsumptionOfCars).IsRequired();
+            modelBuilder
+                .Entity<SimulationInput>()
+                .Property(simulationInput => simulationInput.ChargingStations)
+                .HasConversion(x => JsonConvert.SerializeObject(x),
+                    y => JsonConvert.DeserializeObject<List<ChargingStation>>(y) ?? new());
 
             modelBuilder.Entity<SimulationOutput>()
                 .Property(simulationOutput => simulationOutput.TotalEnergyCharged).IsRequired();
@@ -50,11 +57,6 @@ namespace Dal
 
             modelBuilder.Entity<SimulationOutput>()
                 .Property(simulationOutput => simulationOutput.ChargingStationSimulationResult)
-                .HasConversion(x => JsonConvert.SerializeObject(x),
-                    y => JsonConvert.DeserializeObject<List<ChargingStation>>(y) ?? new());
-            modelBuilder
-                .Entity<SimulationInput>()
-                .Property(simulationInput => simulationInput.ChargingStations)
                 .HasConversion(x => JsonConvert.SerializeObject(x),
                     y => JsonConvert.DeserializeObject<List<ChargingStation>>(y) ?? new());
         }

@@ -15,7 +15,11 @@ export type NumberOfCharginStationWithPowerWithId =
 		id: number;
 	};
 
-export const ChargingStationsAdd = () => {
+type ChargingSTationsAddProps = {
+	readonly handleSubmit: (_: NumberOfCharginStationWithPowerWithId[]) => void;
+};
+
+export const ChargingStationsAdd = (props: ChargingSTationsAddProps) => {
 	const [chargingStations, setChargingStations] = useState<
 		NumberOfCharginStationWithPowerWithId[]
 	>([]);
@@ -38,6 +42,7 @@ export const ChargingStationsAdd = () => {
 								...curr.filter((el) => el.id !== value.id),
 							])
 						}
+						handleSubmit={props.handleSubmit}
 					/>
 				</Stack>
 			</Card>

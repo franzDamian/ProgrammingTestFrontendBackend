@@ -35,25 +35,10 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 type ChargingStationProps = {
 	readonly rows: NumberOfCharginStationWithPowerWithId[];
 	readonly handleDelete: (_: NumberOfCharginStationWithPowerWithId) => void;
+	readonly handleSubmit: (_: NumberOfCharginStationWithPowerWithId[]) => void;
 };
 
 export default function ChargingStationTable(props: ChargingStationProps) {
-	const handleSubmit = () => {
-		ChargerClient.postSimulationInput({
-			arrivalProbabilityMultiplier: 1,
-			averageConsumptionOfCars: 18,
-			chargingStations: props.rows.flatMap((el) =>
-				[...Array(el.count).keys()].map(
-					(_) =>
-						({
-							chargingPower: el.power,
-						} as ChargingStationBackendClient.ChargingStationDto)
-				)
-			),
-		} as ChargingStationBackendClient.SimulationInputDto)
-			.then(() => console.log("done"))
-			.catch(() => console.log("error"));
-	};
 	return (
 		<Box
 			sx={{ padding: 2 }}
@@ -92,7 +77,10 @@ export default function ChargingStationTable(props: ChargingStationProps) {
 				</Table>
 			</TableContainer>
 			<></>
-			<Button variant="contained" onClick={() => handleSubmit()}>
+			<Button
+				variant="contained"
+				onClick={() => props.handleSubmit(props.rows)}
+			>
 				Submit
 			</Button>
 		</Box>

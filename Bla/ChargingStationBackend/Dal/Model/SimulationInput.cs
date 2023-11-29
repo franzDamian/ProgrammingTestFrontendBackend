@@ -13,7 +13,7 @@ namespace Dal.Model
             the consumption of the cars (default: 18 kWh)
             the charging power per charge point (default: 11 kW)
         */
-        public int id { get; set; }
+        public int Id { get; set; }
         public List<ChargingStation> ChargingStations { get; set; } = new List<ChargingStation>();
         public int AverageConsumptionOfCars { get; set; }
         public int ArrivalProbabilityMultiplier { get; set; }

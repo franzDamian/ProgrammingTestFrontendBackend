@@ -4,34 +4,41 @@ import { LineChart } from "@mui/x-charts";
 import { ChargingStationBackendClient } from "../../infrastructure/generated/client.g";
 import { dark } from "@mui/material/styles/createPalette";
 
-/* Create a chart of the last 24 hours for all charging stations by getting the ChargerClient.getOutPut() and from there there the response and then the chargingStationSimulationResult. Use this to get each charging station and use the charging values per hour for one day from the charging stations then combine (x-axis: time, y-axis: cars charging) lines for each charging station and a line for the concurrency factor (which says how many charging stations are used at the same time). */
+type SimulationOutputChartProps = {
+	readonly simOutput?: ChargingStationBackendClient.SimulationOutput;
+};
 
-export const SimulationOutputChart = () => {
+export const SimulationOutputChart = (props: SimulationOutputChartProps) => {
 	const [xAxis, setXAxis] = useState<number[]>();
 	const [yAxis, setYAxis] = useState<number[]>();
 	const [series, setSeries] = useState<number[][]>();
+
+	console.log(props.simOutput);
+
 	useEffect(() => {
-		ChargerClient.getOutPut().then((response) => {
-			const firstSim = response[0];
-			console.log(firstSim.chargingStationSimulationResult);
-			const newSeries = firstSim.chargingStationSimulationResult?.map((sr) => {
+		// get the last simulation output
+		const newSeries = props.simOutput?.chargingStationSimulationResult?.map(
+			(sr) => {
 				const firstDay = sr.chargingValuesForEachDayAndHour?.[0];
 				return firstDay ?? [];
-			});
-			console.log(newSeries);
-			setSeries([newSeries?.[0] ?? []]);
+			}
+		);
+		setSeries(newSeries);
 
-			const firstStation = firstSim.chargingStationSimulationResult?.[0];
-			const firstDay = firstStation?.chargingValuesForEachDayAndHour?.[0];
-			setXAxis(Array.from(firstDay?.keys() ?? []));
-			setYAxis(firstDay);
-			console.log(firstDay);
-		});
-	}, []);
+		const firstStation = props.simOutput?.chargingStationSimulationResult?.[0];
+		const firstDay = firstStation?.chargingValuesForEachDayAndHour?.[0];
+
+		// get the values for the x-axis from new series for each charging station
+		// get the values for the y-axis from new series
+		setXAxis(Array.from(newSeries?.keys() ?? []) ?? []);
+		setXAxis(Array.from(firstDay?.keys() ?? []));
+		setYAxis(firstDay);
+	}, [props.simOutput]);
 	return (
 		<>
 			{series && xAxis && (
 				<LineChart
+					title="last Simulation Output"
 					series={
 						series?.map((v, i) => ({ data: v, label: i.toString() })) ?? []
 					}
@@ -43,24 +50,3 @@ export const SimulationOutputChart = () => {
 		</>
 	);
 };
-
-export function setSimulationFinished(finished: boolean) {
-	return finished;
-}
-function setSimulationOutput(
-	response: ChargingStationBackendClient.SimulationOutput[]
-) {
-	if (response === undefined) {
-		throw new Error("No simulation output found");
-	}
-	if (response.length === 0) {
-		throw new Error("No simulation output found");
-	}
-	if (response.length === 1) {
-		return response[0];
-	}
-	// return last simulation output
-	return response.find((item) => {
-		return item === response[response.length - 1];
-	});
-}

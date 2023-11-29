@@ -50,15 +50,23 @@ namespace ChargingStationBackend.Controllers
         [HttpPost("AddSimulationInput")]
         public async Task PostSimulationInputAsync([FromBody] SimulationInputDto simulationInputDto)
         {
+            var chargingStations = simulationInputDto.ChargingStations.Select(cs => new ChargingStation()
+            {
+                ChargingPower = cs.ChargingPower
+            }).ToList();
+            _context.ChargingStations.AddRange(chargingStations);
+            await _context.SaveChangesAsync();
+            //var daChargingStations = await _context.ChargingStations.ToListAsync();
+            // get for each charging station in the simulationInputDto the charging station from the database with the same charging power and different id
+
+
             var simInput = new SimulationInput()
             {
                 ArrivalProbabilityMultiplier = simulationInputDto.ArrivalProbabilityMultiplier,
                 AverageConsumptionOfCars = simulationInputDto.AverageConsumptionOfCars,
-                ChargingStations = simulationInputDto.ChargingStations.Select(cs => new ChargingStation()
-                {
-                    ChargingPower = cs.ChargingPower
-                }).ToList()
+                ChargingStations = chargingStations
             };
+
             _context.SimulationInputs.Add(simInput);
             var simulationOutput = _simulationService.SimulationRun(simInput);
             _context.SimulationOutputs.Add(simulationOutput);
