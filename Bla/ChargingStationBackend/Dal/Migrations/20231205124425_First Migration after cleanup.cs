@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Dal.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class FirstMigrationaftercleanup : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -29,7 +29,7 @@ namespace Dal.Migrations
                 name: "SimulationInputs",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ChargingStations = table.Column<string>(type: "text", nullable: false),
                     AverageConsumptionOfCars = table.Column<int>(type: "integer", nullable: false),
@@ -37,7 +37,7 @@ namespace Dal.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SimulationInputs", x => x.id);
+                    table.PrimaryKey("PK_SimulationInputs", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -52,7 +52,7 @@ namespace Dal.Migrations
                     NumberOfChargingEventsPerMonth = table.Column<int>(type: "integer", nullable: false),
                     NumberOfChargingEventsPerWeek = table.Column<int>(type: "integer", nullable: false),
                     NumberOfChargingEventsPerDay = table.Column<int>(type: "integer", nullable: false),
-                    DeviationOfConcurrencyFactor = table.Column<double>(type: "double precision", nullable: false)
+                    ConcurrencyFactor = table.Column<double>(type: "double precision", nullable: false)
                 },
                 constraints: table =>
                 {

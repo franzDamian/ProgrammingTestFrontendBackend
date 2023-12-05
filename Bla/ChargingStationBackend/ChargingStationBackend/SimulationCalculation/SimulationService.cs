@@ -25,8 +25,17 @@ namespace ChargingStationBackend.SimulationCalculation
 
             var maxPower = cs.Sum((c) => c.ChargedPower);
 
+            var actualUsedMaxPower = 0.0;
+            var actualUsedMaxPowerPerTick = new List<double>();
+            for (var i = 0; i < _ticksPerDay * 365; ++i)
+            {
+                actualUsedMaxPowerPerTick.Add(cs.Sum((c) => c.ChargedPowerPerTick[i]));
+            }
+
+            actualUsedMaxPower = actualUsedMaxPowerPerTick.Max();
+
             var theoreticalMaxPower = cs.Sum((c) => c.ChargingPower);
-            var concurrencyFactor = maxPower / theoreticalMaxPower;
+            var concurrencyFactor = actualUsedMaxPower / theoreticalMaxPower;
             // save the simulation output to simulationOutput and return it
             var simOutput = new SimulationOutput
             {
@@ -35,7 +44,7 @@ namespace ChargingStationBackend.SimulationCalculation
                 NumberOfChargingEventsPerMonth = cs.Sum(c => c.CountChargingEventsPerDay.GetRange(0, 30).Sum()),
                 NumberOfChargingEventsPerWeek = cs.Sum(c => c.CountChargingEventsPerDay.GetRange(0, 7).Sum()),
                 NumberOfChargingEventsPerDay = cs.Sum(c => c.CountChargingEvents / 365),
-                DeviationOfConcurrencyFactor = concurrencyFactor,
+                ConcurrencyFactor = concurrencyFactor,
                 ChargingStationSimulationResult = cs.Select(c => new ChargingStation
                 {
                     Id = c.Id,

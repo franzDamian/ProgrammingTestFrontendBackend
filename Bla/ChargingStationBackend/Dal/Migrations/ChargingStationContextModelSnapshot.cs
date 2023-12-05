@@ -76,7 +76,7 @@ namespace Dal.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<double>("DeviationOfConcurrencyFactor")
+                    b.Property<double>("ConcurrencyFactor")
                         .HasColumnType("double precision");
 
                     b.Property<int>("NumberOfChargingEventsPerDay")

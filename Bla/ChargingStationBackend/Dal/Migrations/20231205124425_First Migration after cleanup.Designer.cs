@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Dal.Migrations
 {
     [DbContext(typeof(ChargingStationContext))]
-    [Migration("20231120163524_Initial Migration")]
-    partial class InitialMigration
+    [Migration("20231205124425_First Migration after cleanup")]
+    partial class FirstMigrationaftercleanup
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -46,11 +46,11 @@ namespace Dal.Migrations
 
             modelBuilder.Entity("Dal.Model.SimulationInput", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ArrivalProbabilityMultiplier")
                         .HasColumnType("integer");
@@ -62,7 +62,7 @@ namespace Dal.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
                     b.ToTable("SimulationInputs");
                 });
@@ -79,7 +79,7 @@ namespace Dal.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<double>("DeviationOfConcurrencyFactor")
+                    b.Property<double>("ConcurrencyFactor")
                         .HasColumnType("double precision");
 
                     b.Property<int>("NumberOfChargingEventsPerDay")

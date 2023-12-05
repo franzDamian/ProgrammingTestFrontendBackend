@@ -395,7 +395,7 @@ export class SimulationOutput implements ISimulationOutput {
     numberOfChargingEventsPerMonth?: number;
     numberOfChargingEventsPerWeek?: number;
     numberOfChargingEventsPerDay?: number;
-    deviationOfConcurrencyFactor?: number;
+    concurrencyFactor?: number;
 
     constructor(data?: ISimulationOutput) {
         if (data) {
@@ -419,7 +419,7 @@ export class SimulationOutput implements ISimulationOutput {
             this.numberOfChargingEventsPerMonth = _data["numberOfChargingEventsPerMonth"];
             this.numberOfChargingEventsPerWeek = _data["numberOfChargingEventsPerWeek"];
             this.numberOfChargingEventsPerDay = _data["numberOfChargingEventsPerDay"];
-            this.deviationOfConcurrencyFactor = _data["deviationOfConcurrencyFactor"];
+            this.concurrencyFactor = _data["concurrencyFactor"];
         }
     }
 
@@ -443,7 +443,7 @@ export class SimulationOutput implements ISimulationOutput {
         data["numberOfChargingEventsPerMonth"] = this.numberOfChargingEventsPerMonth;
         data["numberOfChargingEventsPerWeek"] = this.numberOfChargingEventsPerWeek;
         data["numberOfChargingEventsPerDay"] = this.numberOfChargingEventsPerDay;
-        data["deviationOfConcurrencyFactor"] = this.deviationOfConcurrencyFactor;
+        data["concurrencyFactor"] = this.concurrencyFactor;
         return data;
     }
 
@@ -463,7 +463,7 @@ export interface ISimulationOutput {
     numberOfChargingEventsPerMonth?: number;
     numberOfChargingEventsPerWeek?: number;
     numberOfChargingEventsPerDay?: number;
-    deviationOfConcurrencyFactor?: number;
+    concurrencyFactor?: number;
 }
 
 export class ChargingStationBackendException extends Error {

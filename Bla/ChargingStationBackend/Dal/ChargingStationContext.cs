@@ -53,7 +53,7 @@ namespace Dal
             modelBuilder.Entity<SimulationOutput>()
                 .Property(simulationOutput => simulationOutput.NumberOfChargingEventsPerDay).IsRequired();
             modelBuilder.Entity<SimulationOutput>()
-                .Property(simulationOutput => simulationOutput.DeviationOfConcurrencyFactor).IsRequired();
+                .Property(simulationOutput => simulationOutput.ConcurrencyFactor).IsRequired();
 
             modelBuilder.Entity<SimulationOutput>()
                 .Property(simulationOutput => simulationOutput.ChargingStationSimulationResult)

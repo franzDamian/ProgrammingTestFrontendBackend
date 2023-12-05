@@ -3,7 +3,7 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 
 import { ChargerClient } from "./infrastructure/api";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
 	ChargingStationsAdd,
 	NumberOfCharginStationWithPowerWithId,
@@ -14,30 +14,9 @@ import { ChargingStationBackendClient } from "./infrastructure/generated/client.
 export type ListType = { key: string; value: string };
 
 export default function App() {
-	const [chargingStations, setChargingStations] = useState<ListType[]>();
-	const [chargingStationAdded, setChargingStationAdded] = useState(false);
 	const [simOutput, setSimOutput] =
 		useState<ChargingStationBackendClient.SimulationOutput>();
 
-	useEffect(() => {
-		if (chargingStationAdded) {
-			ChargerClient.getCharger().then((response) => {
-				console.log(response);
-				setChargingStations(
-					response.map((item) => ({
-						key: item.id?.toString() ?? "",
-						value: item.chargingPower?.toString() ?? "",
-					}))
-				);
-				setChargingStationAdded(false);
-			});
-		}
-	}, [chargingStationAdded]);
-
-	// const handleCharginStationAdd = useCallback(() => {
-	// 	// do api stuff add chargin station, after this in .then add
-	// 	setChargingStationAdded(true);
-	// }, []);
 	const handleSubmit = (
 		chargingStations: NumberOfCharginStationWithPowerWithId[]
 	) => {
@@ -60,8 +39,7 @@ export default function App() {
 					setSimOutput(
 						new ChargingStationBackendClient.SimulationOutput({
 							totalEnergyCharged: lastSim?.totalEnergyCharged,
-							deviationOfConcurrencyFactor:
-								lastSim?.deviationOfConcurrencyFactor,
+							concurrencyFactor: lastSim?.concurrencyFactor,
 							numberOfChargingEventsPerDay:
 								lastSim?.numberOfChargingEventsPerDay,
 							numberOfChargingEventsPerWeek:
@@ -98,7 +76,6 @@ export default function App() {
 
 				<SimulationOutputChart simOutput={simOutput} />
 				<ChargingStationStatistic simOutput={simOutput} />
-				{/*<Button onClick={getChargingStations}>Start Simulation</Button>(*/}
 			</Box>
 		</Container>
 	);

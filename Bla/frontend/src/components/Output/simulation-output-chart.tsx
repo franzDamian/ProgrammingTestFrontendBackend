@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { ChargerClient } from "../../infrastructure/api";
+import { useEffect, useState } from "react";
 import { LineChart } from "@mui/x-charts";
 import { ChargingStationBackendClient } from "../../infrastructure/generated/client.g";
-import { dark } from "@mui/material/styles/createPalette";
+import { Stack, Typography } from "@mui/material";
 
 type SimulationOutputChartProps = {
 	readonly simOutput?: ChargingStationBackendClient.SimulationOutput;
@@ -10,7 +9,6 @@ type SimulationOutputChartProps = {
 
 export const SimulationOutputChart = (props: SimulationOutputChartProps) => {
 	const [xAxis, setXAxis] = useState<number[]>();
-	const [yAxis, setYAxis] = useState<number[]>();
 	const [series, setSeries] = useState<number[][]>();
 
 	console.log(props.simOutput);
@@ -32,20 +30,26 @@ export const SimulationOutputChart = (props: SimulationOutputChartProps) => {
 		// get the values for the y-axis from new series
 		setXAxis(Array.from(newSeries?.keys() ?? []) ?? []);
 		setXAxis(Array.from(firstDay?.keys() ?? []));
-		setYAxis(firstDay);
 	}, [props.simOutput]);
 	return (
 		<>
 			{series && xAxis && (
-				<LineChart
-					title="last Simulation Output"
-					series={
-						series?.map((v, i) => ({ data: v, label: i.toString() })) ?? []
-					}
-					xAxis={[{ scaleType: "point", data: xAxis }]}
-					width={500}
-					height={300}
-				/>
+				<Stack sx={{ margin: 4 }}>
+					<Typography
+						sx={{ display: "flex", alignSelf: "center" }}
+						variant="h6"
+					>
+						Simulation Output
+					</Typography>
+					<LineChart
+						series={
+							series?.map((v, i) => ({ data: v, label: i.toString() })) ?? []
+						}
+						xAxis={[{ scaleType: "point", data: xAxis }]}
+						width={500}
+						height={300}
+					/>
+				</Stack>
 			)}
 		</>
 	);

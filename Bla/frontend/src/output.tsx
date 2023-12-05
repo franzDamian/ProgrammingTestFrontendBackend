@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
 import { ChargingStationBackendClient } from "../src/infrastructure/generated/client.g";
-import { ChargerClient } from "./infrastructure/api";
 import {
 	Box,
 	Table,
@@ -40,7 +38,9 @@ export const ChargingStationStatistic = (
 						<TableBody>
 							<TableRow>
 								<TableCell>Total Energy Charged </TableCell>
-								<TableCell>{props?.simOutput?.totalEnergyCharged} KW</TableCell>
+								<TableCell>
+									{props?.simOutput?.totalEnergyCharged} kWh
+								</TableCell>
 							</TableRow>
 							<TableRow>
 								<TableCell>Year</TableCell>
@@ -67,10 +67,8 @@ export const ChargingStationStatistic = (
 								</TableCell>
 							</TableRow>
 							<TableRow>
-								<TableCell>Deviation of Concurrency Factor</TableCell>
-								<TableCell>
-									{props?.simOutput?.deviationOfConcurrencyFactor}
-								</TableCell>
+								<TableCell>Concurrency Factor</TableCell>
+								<TableCell>{props?.simOutput?.concurrencyFactor}</TableCell>
 							</TableRow>
 						</TableBody>
 					</Table>

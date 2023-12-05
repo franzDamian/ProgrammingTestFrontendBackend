@@ -25,6 +25,6 @@ namespace Dal.Model
         public int NumberOfChargingEventsPerMonth { get; set; }
         public int NumberOfChargingEventsPerWeek { get; set; }
         public int NumberOfChargingEventsPerDay { get; set; }
-        public double DeviationOfConcurrencyFactor { get; set; }
+        public double ConcurrencyFactor { get; set; }
     }
 }

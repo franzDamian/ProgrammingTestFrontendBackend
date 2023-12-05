@@ -9,8 +9,6 @@ import Paper from "@mui/material/Paper";
 import { NumberOfCharginStationWithPowerWithId } from "./charging-stations-add";
 import { Box, Button, IconButton } from "@mui/material";
 import { Delete as DeleteIcon } from "@mui/icons-material";
-import { ChargerClient } from "../../infrastructure/api";
-import { ChargingStationBackendClient } from "../../infrastructure/generated/client.g";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
 	[`&.${tableCellClasses.head}`]: {
