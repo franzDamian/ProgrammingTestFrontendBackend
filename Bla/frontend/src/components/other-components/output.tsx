@@ -1,4 +1,4 @@
-import { ChargingStationBackendClient } from "../src/infrastructure/generated/client.g";
+import { ChargingStationBackendClient } from "../../infrastructure/generated/client.g";
 import {
 	Box,
 	Table,

@@ -28,7 +28,6 @@ dist-ssr
 !.vscode/extensions.json
 
 # IDE Visual Studio
-*.sln
 *.suo
 *.ntvs*
 *.njsproj

@@ -1,28 +1,23 @@
-# Charging Station Backend
+# Charging Station Simulator
 
-This project simulates the energy consumption and power demand of an electric vehicle (EV) charging station. The simulation takes into account the probability distributions of EV arrivals and their charging needs, as well as the number of available chargepoints.
+## Introduction
 
-## Usage
+this is a small project to show how different number of charging station affect the overall needed power of a charging station.
 
-You can use the provided C# code to run the simulation for 1 to 30 chargepoints. The simulation outputs the following results for each `num_chargepoints` value:
+## Code overview
 
-- `Number of chargepoints`: The number of available chargepoints.
-- `Total energy consumed`: The total energy consumed by all EVs in kWh.
-- `Theoretical maximum power demand`: The maximum power demand if all chargepoints were used simultaneously.
-- `Actual maximum power demand`: The maximum power demand observed during the simulation.
-- `Concurrency factor`: The ratio of actual maximum power demand to theoretical maximum power demand.
+The code is split into two parts, the frontend and the backend. The backend is written in C# and uses a rest api to communicate with the frontend. The frontend is written in typesscript and uses the react framework.
 
-## Code
+## How to run
 
-The simulation code is written in C#. It uses the following variables:
+To run the project you need to have docker installed and an IDE like VS . Then you can run the following command in the frontend directory of the project:
 
-- `power_per_chargepoint`: The power rating of each chargepoint in kW.
-- `num_intervals`: The number of 15-minute intervals in a year.
-- `arrival_distribution`: The probability distribution of EV arrivals per 15-minute interval.
-- `charging_needs_distribution`: The probability distribution of EV charging needs in kWh.
+```bash
+../frontend> yarn dev
+```
 
-The simulation code is located in the `Program.cs` file.
+also you need to run the project using Visual Studio or an other ide. Alternativly use the following command in the backend directory of the project:
 
-## License
-
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+```bash
+../backend> dotnet build
+```

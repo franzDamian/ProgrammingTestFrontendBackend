@@ -9,7 +9,7 @@ import {
 	NumberOfCharginStationWithPowerWithId,
 } from "./components/charging-stations/charging-stations-add";
 import { SimulationOutputChart } from "./components/Output/simulation-output-chart";
-import { ChargingStationStatistic } from "./output";
+import { ChargingStationStatistic } from "./components/other-components/output";
 import { ChargingStationBackendClient } from "./infrastructure/generated/client.g";
 export type ListType = { key: string; value: string };
 

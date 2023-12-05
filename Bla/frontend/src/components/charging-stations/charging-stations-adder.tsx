@@ -3,7 +3,7 @@ import { ChargingStationsNumberSlider } from "./charging-stations-adder-slider";
 import { ChargingStationPowersSlider } from "./charging-stations-power-slider";
 import { useState } from "react";
 import { NumberOfCharginStationWithPower } from "./charging-stations-add";
-import { FormPropsTextFields } from "../../inputBox";
+import { FormPropsTextFields } from "../other-components/inputBox";
 
 type ChargingStationAdderProps = {
 	readonly handleAdd: (_: NumberOfCharginStationWithPower) => void;
